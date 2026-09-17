@@ -30,7 +30,7 @@ It defines:
 - definition of done;
 - future decision rules.
 
-This document is intentionally more detailed than `README.md`.
+- This document is intentionally more detailed than `README.md`.
 
 ### Relationship with `README.md`
 
@@ -1190,7 +1190,7 @@ No single metric is sufficient.
 
 ## Answer Quality Metrics
 
-Primary metrics:
+**Primary metrics:**
 
 ### Exact Match
 
@@ -1233,7 +1233,7 @@ from:
 good retrieval but poor generation
 ## Router Metrics
 
-Measure:
+**Measure:**
 
 Accuracy;
 Precision;
@@ -1335,10 +1335,10 @@ is not an automatic success.
 
 The intended objective is a favorable trade-off among:
 
-Answer Quality
+### Answer Quality
 Latency
 Token Usage
-Retrieval Quality
+### Retrieval Quality
 
 The final analysis should therefore compare systems across multiple dimensions.
 
@@ -2178,7 +2178,7 @@ Compression could save generation tokens but take more time than it saves.
 
 Mitigation
 
-Measure:
+**Measure:**
 
 compression latency
 +
