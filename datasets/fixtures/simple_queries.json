@@ -1,0 +1,52 @@
+[
+  {
+    "query": "What is the capital of France?",
+    "reference_answer": "Paris",
+    "complexity_label": "SIMPLE"
+  },
+  {
+    "query": "Who wrote the play Hamlet?",
+    "reference_answer": "William Shakespeare",
+    "complexity_label": "SIMPLE"
+  },
+  {
+    "query": "What is the chemical symbol for water?",
+    "reference_answer": "H2O",
+    "complexity_label": "SIMPLE"
+  },
+  {
+    "query": "How many continents are there on Earth?",
+    "reference_answer": "Seven",
+    "complexity_label": "SIMPLE"
+  },
+  {
+    "query": "What is the largest ocean on Earth?",
+    "reference_answer": "Pacific Ocean",
+    "complexity_label": "SIMPLE"
+  },
+  {
+    "query": "In what year did the Titanic sink?",
+    "reference_answer": "1912",
+    "complexity_label": "SIMPLE"
+  },
+  {
+    "query": "Who painted the Mona Lisa?",
+    "reference_answer": "Leonardo da Vinci",
+    "complexity_label": "SIMPLE"
+  },
+  {
+    "query": "What is the hardest natural substance on Earth?",
+    "reference_answer": "Diamond",
+    "complexity_label": "SIMPLE"
+  },
+  {
+    "query": "What is the smallest planet in our solar system?",
+    "reference_answer": "Mercury",
+    "complexity_label": "SIMPLE"
+  },
+  {
+    "query": "Who was the first president of the United States?",
+    "reference_answer": "George Washington",
+    "complexity_label": "SIMPLE"
+  }
+]
