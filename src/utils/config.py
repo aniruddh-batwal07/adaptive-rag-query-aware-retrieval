@@ -55,6 +55,7 @@ class EvaluationConfig:
     dataset: str
     split: str
     sample_limit: int
+    split_ratios: list[float]
 
 @dataclass
 class RuntimeConfig:
@@ -97,6 +98,12 @@ def validate_config(config: Config):
     # evaluation
     if config.evaluation.sample_limit <= 0:
         raise ValueError("evaluation.sample_limit must be positive")
+    if not isinstance(config.evaluation.split_ratios, list) or len(config.evaluation.split_ratios) != 3:
+        raise ValueError("evaluation.split_ratios must be a list of 3 floats")
+    if not all(isinstance(x, (int, float)) and x >= 0 for x in config.evaluation.split_ratios):
+        raise ValueError("evaluation.split_ratios must contain non-negative numbers")
+    if abs(sum(config.evaluation.split_ratios) - 1.0) > 1e-6:
+        raise ValueError("evaluation.split_ratios must sum to 1.0")
     
     # runtime
     if config.runtime.batch_size <= 0:
@@ -187,10 +194,15 @@ def load_config(path: str) -> Config:
     
     # Evaluation
     eval_data = data['evaluation']
-    for k in ['dataset', 'split', 'sample_limit']:
+    for k in ['dataset', 'split', 'sample_limit', 'split_ratios']:
         if k not in eval_data:
             raise KeyError(f"Missing required field: evaluation.{k}")
-    evaluation_config = EvaluationConfig(**eval_data)
+    evaluation_config = EvaluationConfig(
+        dataset=eval_data['dataset'],
+        split=eval_data['split'],
+        sample_limit=eval_data['sample_limit'],
+        split_ratios=eval_data['split_ratios']
+    )
     
     # Runtime
     run_data = data['runtime']

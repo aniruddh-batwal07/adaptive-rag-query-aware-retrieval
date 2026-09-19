@@ -42,6 +42,7 @@ evaluation:
   dataset: "mixed"
   split: "test"
   sample_limit: 1000
+  split_ratios: [0.7, 0.15, 0.15]
 
 runtime:
   device: "auto"
