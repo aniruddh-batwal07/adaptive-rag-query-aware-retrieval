@@ -85,3 +85,17 @@ class VectorStore:
         Returns the number of items in the collection.
         """
         return self.collection.count()
+
+    def query(self, query_embeddings: List[List[float]], top_k: int) -> Dict[str, Any]:
+        """
+        Queries the collection for the closest top_k records for the given query_embeddings.
+        Returns the raw ChromaDB query response.
+        """
+        if not query_embeddings:
+            return {"ids": [], "documents": [], "metadatas": [], "distances": []}
+            
+        return self.collection.query(
+            query_embeddings=query_embeddings,
+            n_results=top_k,
+            include=["documents", "metadatas", "distances"]
+        )
