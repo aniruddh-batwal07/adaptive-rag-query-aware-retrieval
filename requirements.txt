@@ -5,3 +5,7 @@ chromadb
 llmlingua
 pytest
 pyyaml
+pandas
+pyarrow
+fsspec
+huggingface-hub

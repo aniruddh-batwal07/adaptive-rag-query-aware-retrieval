@@ -37,26 +37,23 @@ def test_unknown_fixture_type():
 
 def test_missing_file():
     with tempfile.TemporaryDirectory() as tmp:
-        base_dir = Path(tmp)
+        bdir = Path(tmp)
         with pytest.raises(FileNotFoundError):
-            load_fixtures("simple", base_dir)
+            load_fixtures("simple", bdir)
 
 def test_malformed_json_and_schema():
     with tempfile.TemporaryDirectory() as tmp:
-        base_dir = Path(tmp)
+        bdir = Path(tmp)
         
-        # Test malformed JSON
-        malformed_file = base_dir / "simple_queries.json"
+        malformed_file = bdir / "simple_queries.json"
         malformed_file.write_text("not json", encoding="utf-8")
         with pytest.raises(ValueError, match="Malformed JSON"):
-            load_fixtures("simple", base_dir)
+            load_fixtures("simple", bdir)
             
-        # Test missing key
         malformed_file.write_text(json.dumps([{"query": "a", "complexity_label": "SIMPLE"}]), encoding="utf-8")
         with pytest.raises(ValueError, match="missing required key 'reference_answer'"):
-            load_fixtures("simple", base_dir)
+            load_fixtures("simple", bdir)
             
-        # Test wrong label
         malformed_file.write_text(json.dumps([{"query": "a", "reference_answer": "b", "complexity_label": "COMPLEX"}]), encoding="utf-8")
         with pytest.raises(ValueError, match="expected 'SIMPLE'"):
-            load_fixtures("simple", base_dir)
+            load_fixtures("simple", bdir)
