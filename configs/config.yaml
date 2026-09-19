@@ -1,0 +1,39 @@
+models:
+  router:
+    name: "microsoft/deberta-v3-small"
+    checkpoint: null
+  embeddings:
+    name: "BAAI/bge-small-en-v1.5"
+  compressor:
+    name: "llmlingua"
+  generator:
+    name: "microsoft/Phi-3-mini-4k-instruct"
+
+retrieval:
+  k_simple: 2
+  k_complex: 10
+  baseline_k: 5
+  chunk_size: 512
+  chunk_overlap: 50
+
+routing:
+  threshold: null
+  fallback_route: "SIMPLE"
+
+compression:
+  enabled: true
+  budget: null
+
+generation:
+  temperature: 0.1
+  max_new_tokens: 256
+  seed: 42
+
+evaluation:
+  dataset: "mixed"
+  split: "test"
+  sample_limit: 1000
+
+runtime:
+  device: "auto"
+  batch_size: 1
