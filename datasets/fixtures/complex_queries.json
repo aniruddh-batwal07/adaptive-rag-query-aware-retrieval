@@ -1,0 +1,52 @@
+[
+  {
+    "query": "Which actor who played James Bond also starred in the movie The Thomas Crown Affair?",
+    "reference_answer": "Pierce Brosnan",
+    "complexity_label": "COMPLEX"
+  },
+  {
+    "query": "What is the name of the director of the movie Inception, and what was his first feature film?",
+    "reference_answer": "Christopher Nolan, Following",
+    "complexity_label": "COMPLEX"
+  },
+  {
+    "query": "Who was the lead singer of the band that recorded 'Bohemian Rhapsody' and where was he born?",
+    "reference_answer": "Freddie Mercury, Stone Town, Zanzibar",
+    "complexity_label": "COMPLEX"
+  },
+  {
+    "query": "What is the capital of the country where the Amazon river terminates?",
+    "reference_answer": "Brasília",
+    "complexity_label": "COMPLEX"
+  },
+  {
+    "query": "Which author won the Nobel Prize in Literature in 1954 and what is his most famous novella about a Cuban fisherman?",
+    "reference_answer": "Ernest Hemingway, The Old Man and the Sea",
+    "complexity_label": "COMPLEX"
+  },
+  {
+    "query": "Who directed the movie that won the Academy Award for Best Picture in 1994, and who starred as the main character?",
+    "reference_answer": "Robert Zemeckis, Tom Hanks",
+    "complexity_label": "COMPLEX"
+  },
+  {
+    "query": "What is the atomic number of the element named after the creator of the periodic table?",
+    "reference_answer": "101 (Mendelevium)",
+    "complexity_label": "COMPLEX"
+  },
+  {
+    "query": "What is the name of the largest moon of the planet that is sixth from the sun?",
+    "reference_answer": "Titan",
+    "complexity_label": "COMPLEX"
+  },
+  {
+    "query": "Who was the UK Prime Minister when the United Kingdom voted to leave the European Union?",
+    "reference_answer": "David Cameron",
+    "complexity_label": "COMPLEX"
+  },
+  {
+    "query": "What is the tallest mountain in the world, and in which mountain range is it located?",
+    "reference_answer": "Mount Everest, Himalayas",
+    "complexity_label": "COMPLEX"
+  }
+]

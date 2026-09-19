@@ -1,0 +1,23 @@
+{
+  "seed": 42,
+  "split_ratios": [
+    0.7,
+    0.15,
+    0.15
+  ],
+  "input_files": [
+    "popqa.jsonl",
+    "hotpotqa.jsonl"
+  ],
+  "input_counts": {
+    "popqa": 1000,
+    "hotpotqa": 1000,
+    "total_raw": 2000,
+    "total_deduped": 1988
+  },
+  "output_counts": {
+    "train": 1391,
+    "val": 298,
+    "test": 299
+  }
+}
