@@ -49,8 +49,7 @@ class ResponseGenerator:
         logger.info(f"Successfully loaded generator in {load_time * 1000:.2f} ms.")
 
     def build_prompt(self, query: str, context: str) -> str:
-        # Specification ADR-001 requires exactly this structure
-        return f"Question:\n    {query}\n\nContext:\n    {context}\n\nAnswer:"
+        return f"Question:\n{query}\n\nContext:\n{context}"
 
     def generate(self, query: str, context: str) -> GeneratedAnswer:
         if not isinstance(query, str):
