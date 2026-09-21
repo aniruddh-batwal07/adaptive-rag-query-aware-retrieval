@@ -12,8 +12,8 @@ logger = get_logger(__name__)
 class OptimizedContext:
     text: str
     original_tokens: int
-    compressed_tokens: int
-    compression_ratio: float
+    compressed_tokens: Optional[int]
+    compression_ratio: Optional[float]
     latency_ms: float
     status: str
 
@@ -104,4 +104,13 @@ class ContextOptimizer:
             
         except Exception as e:
             logger.error(f"Context compression failed: {e}")
-            raise e
+            latency_ms = (time.time() - start_time) * 1000.0
+
+            return OptimizedContext(
+                text=retrieved_context,
+                original_tokens=len(retrieved_context.split()),
+                compressed_tokens=None,
+                compression_ratio=None,
+                latency_ms=latency_ms,
+                status="FAILED"
+            )

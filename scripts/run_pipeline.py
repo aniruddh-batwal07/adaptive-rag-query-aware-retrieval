@@ -12,8 +12,8 @@ from src.pipeline.adaptive_rag import Pipeline
 def main():
     parser = argparse.ArgumentParser(description="Run the minimal AdaptiveRAG pipeline.")
     parser.add_argument("--query", type=str, help="The query to answer.")
-    parser.add_argument("--baseline", type=str, choices=["fixed_rag", "llm_only"], default="fixed_rag",
-                        help="Select the baseline to run. Use 'fixed_rag' for Baseline B or 'llm_only' for Baseline A.")
+    parser.add_argument("--baseline", type=str, choices=["fixed_rag", "llm_only", "always_compress"], default="fixed_rag",
+                        help="Select the baseline to run. Use 'fixed_rag' for Baseline B, 'llm_only' for Baseline A, or 'always_compress' for Baseline C.")
     parser.add_argument("--fixtures", action="store_true", help="Run the 5 development fixture queries and save results.")
     args = parser.parse_args()
     
@@ -41,8 +41,19 @@ def main():
             print(f"  Retrieval Latency    : {lat:.2f} ms")
         else:
             print(f"  Retrieval Latency    : N/A")
+
+        print(f"  Compression Applied  : {result.execution_metadata.compression_applied}")
+        if result.execution_metadata.compression_applied:
+            print(f"  Original Tokens      : {result.execution_metadata.original_context_tokens}")
+            print(f"  Compressed Tokens    : {result.execution_metadata.compressed_context_tokens}")
+            c_lat = result.execution_metadata.compression_latency_ms
+            if c_lat is not None:
+                print(f"  Compression Latency  : {c_lat:.2f} ms")
+
         print(f"  Generation Latency   : {result.execution_metadata.generation_latency_ms:.2f} ms")
         print(f"  Total Latency        : {result.execution_metadata.total_latency_ms:.2f} ms")
+        if result.execution_metadata.error_status:
+            print(f"  Error Status         : {result.execution_metadata.error_status}")
 
     if args.fixtures:
         print("\nRunning fixtures...")
@@ -55,6 +66,8 @@ def main():
         
         if args.baseline == "llm_only":
             results_dir = "results/baseline_a"
+        elif args.baseline == "always_compress":
+            results_dir = "results/baseline_c"
         else:
             results_dir = "results/baseline_b"
             
@@ -78,10 +91,31 @@ def main():
                     "total_latency_ms": result.execution_metadata.total_latency_ms,
                     "metadata": {
                         "normalized_query": result.execution_metadata.query,
-                        "retrieval_latency_ms": result.execution_metadata.retrieval_latency_ms
+                        "retrieval_latency_ms": result.execution_metadata.retrieval_latency_ms,
+                        "compression_applied": result.execution_metadata.compression_applied,
+                        "original_context_tokens": result.execution_metadata.original_context_tokens,
+                        "compressed_context_tokens": result.execution_metadata.compressed_context_tokens,
+                        "compression_ratio": result.execution_metadata.compression_ratio,
+                        "compression_latency_ms": result.execution_metadata.compression_latency_ms,
+                        "error_status": result.execution_metadata.error_status,
                     }
                 }
-                out_f.write(json.dumps(res_dict) + "\n")
+                class NumpyEncoder(json.JSONEncoder):
+                    def default(self, obj):
+                        if type(obj).__name__ == 'float32' or type(obj).__name__ == 'float64':
+                            return float(obj)
+                        if type(obj).__name__ == 'int64' or type(obj).__name__ == 'int32':
+                            return int(obj)
+                        if hasattr(obj, 'item'):
+                            return obj.item()
+                        return super(NumpyEncoder, self).default(obj)
+
+                try:
+                    out_f.write(json.dumps(res_dict, cls=NumpyEncoder) + "\n")
+                    out_f.flush()
+                except Exception as e:
+                    print(f"FAILED TO DUMPS: {e}")
+                    raise
         print("Done running fixtures.")
 
 if __name__ == "__main__":

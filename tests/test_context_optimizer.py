@@ -90,14 +90,21 @@ def test_deterministic_behavior(mock_config):
     assert res1.compressed_tokens == res2.compressed_tokens
     assert res1.compression_ratio == res2.compression_ratio
 
-def test_error_propagation(mock_config):
+def test_error_fallback(mock_config):
     mock_compressor = MagicMock()
     mock_compressor.compress_prompt.side_effect = RuntimeError("Compression error")
     
     optimizer = ContextOptimizer(config=mock_config, compressor=mock_compressor)
     
-    with pytest.raises(RuntimeError, match="Compression error"):
-        optimizer.compress("query", "context")
+    context = "original context text"
+    result = optimizer.compress("query", context)
+
+    assert result.status == "FAILED"
+    assert result.text == context
+    assert result.original_tokens == len(context.split())
+    assert result.compressed_tokens is None
+    assert result.compression_ratio is None
+    assert result.latency_ms > 0
 
 def test_division_by_zero(mock_config):
     mock_compressor = MagicMock()
