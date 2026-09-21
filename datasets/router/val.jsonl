@@ -1,0 +1,298 @@
+{"query": "Which is the Oil Capital of China, Chaoyang District, Shantou, or Daqing?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What genre is So Fine?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was the producer of 15 Minutes?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Which writer was from England, Henry Roth or Robert Erskine Childers?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who directed the film which starred Steve Cochran and the actor who played Sheriff Roy Coffee in \"Bonanza\"?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What genre is The Nest?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What team was led to victory in 1939 by a two-time All-American basketball player nicknamed \"Scat\"?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "When was the female character that on June 9, 2015 was promoted to a series regular first introduced on \"Once Upon a Time\"?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What title did the author of Det norske Theater's first production hold ? ", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the screenwriter for Forty Guns?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was the composer of Cats?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Bordan Tkachuk was the CEO of a company that provides what sort of products?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What nationality was the inventor of the Alexander Technique for retraining the mind and body to avoid muscular tension?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Tysons Galleria is located in what county?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the director of The Island?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Between Danny Elfman and Fran Healy who has worked in more diverse fields?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "In what year was the mathematician husband of Anneli Cahn Lax born?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Where was the original line of the railroad William Howard worked for?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Insomniac Events is part of a partnership with a club founded by an investor of what heritage?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What genre is Second Time Around?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Suzanne Simone Baptiste Louverture is the wife of the leader of which revolution?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the screenwriter for Evan Almighty?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What sport does Alain Laurier play?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was the director of Children Without?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was the screenwriter for The Robe?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "In what country is Jam Filled Entertainment?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What genre is The Internship?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "The Florida Atlantic Owls team represents a school classified by the Carnegie Foundation as what?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Tom Araya and Marcus Mumford were both what?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What sport does Dimitri P\u00e4tzold play?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "In what year was the singer who popularized \"I'll Keep the Lovelight Burning\" born?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What genre is HiM?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Margaret Wilson and Edna St. Vincent Millay have both been given what?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the screenwriter for Silence?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What genre is Need to Believe?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Arr\u00eatez-moi is a film in which film genre, known for suspense and anxiety?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the screenwriter for Expos\u00e9?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What is the population of the town that gets it's water supply from Canobie Lake?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What is the religion of Nikola Eterovi\u0107?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who is the father of Jesus?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was a Christian Evangelist and US prisoner of war survivor that was the basis for a film directed by Angelina Jolie?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What honor has been received by both a former NASA Astronaut and the Founder of FlightSafety International?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the screenwriter for Spotlight?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Pandora- The World of Avatar includes a ride that allows guest to take flight on what animal?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Which university has more schools, Ateneo de Davao University or University of Rochester?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the screenwriter for City Of?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": " Keith Konrad Slettedahl appeared on which season of \"How I Met Your Mother\"?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What country can the scopula nucleata be found in?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the producer of Filmmaker?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What genre is In Silence?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What was the official religion of the lands of the husband of Dorothea of Denmark, Duchess of Prussia?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the producer of The Pioneers?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What genre is Low Life?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was the screenwriter for Alice?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "When did the first bank come into existence that is part of an organization that serves rural areas of India with basic banking and financial services?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What is the religion of David Mills?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What is the capital of Syria?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Where does the city situated where Kellyville Ridge is located?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Where is Anticimex's parent company headquartered?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Lost in Time includes the theme song for a French/Japanese anime series that was created by who?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "TACA Airlines, is an airline owned by a conglomerate owned by who ?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who is the father of George VI?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Which founding member drew critical acclaim as a bass guitarist with melodic basslines  on Murmur?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the director of Cake?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was the producer of Disclosure?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What genre is Bakkushan?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What other female rappers appeared Brittany Nicole Carpentero in the official remix to My Chick Bad?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "In what city was Mar\u00eda Milagros V\u00e9liz born?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What genre is The Attack?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What film came out first, All the Marbles or What Ever Happened to Baby Jane?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What is the capital of Amazonas?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What is the capital of Basel-Landschaft?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What community in Imperial County, California is partly named after a species of tree that is native to North America, Europe, and western Asia?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who is the author of Tropic Moon?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What is Norman Crowther Hunt, Baron Crowther-Hunt's occupation?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was the base where the 413th Flight Test Group is stationed named after?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What was the profession of the one who wrote a song on a 2005 album he collaborated on with Marc Predka?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the director of Warm Nights on a Slow Moving Train?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who is the author of Beaches?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "The bomber who carried out a Provisional Irish Republican Army (IRA) assassination attempt against the top tier of the British government in 1984 was born in what year?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the producer of Bark?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Stephen susco wrote a movie produced by which american film actor?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the director of The Distance?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What creature of American folklore gained notoriety in 1964?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Does Dashboard Confessional have more members than World Party?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Otterington railway station was on a 393 mi major railway that linked Edinburgh to what city?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the team president of the 2012 Cleveland Browns?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who is the father of Charles II of England?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Which company does Timothy Oulton retail his products through that is based in Corte Madera?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the composer of BLUE?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Chiang Chungcheng was involved involved in what battle in 1942?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What organization does Sandra Pizzarello and Doctorate have in common?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What is Dinesh Singh's occupation?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "TimeCamp enables what type of commercial documents from a seller to a buyer?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the producer of The Ring?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was the screenwriter for A Night in Sickbay?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Inserra Supermarkets is a supermarket chain that is a member of what cooperative that was founded in 1946 and based in Keasbey, New Jersey?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the director of Her?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Which number in the Final Fantasy series was created by Hiroyuki Ito and allows the player control of the artificial intelligence of the characters in battle?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Which town has a greater population as of the 2010 census, Minden, Nevada or Gardnerville, Nevada?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "How long is the road the A12 is a part of?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "In what year did the Guild of Music Supervisors Awards recognize a British-American romantic drama film based on the 1952 romance novel \"The Price of Salt\" starring Cate Blanchett?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Grimsby Minster is located in which English Province?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What is the population of the city in which the first edition of the South American Youth Olympic Games were held?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "In what state is the manufacturer of Bisquick headquartered?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "In what country is American Booksellers Association?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Loch Shiel is part of the river that drains into the sea near the castle that sits west of what town?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What is the nationality of the actor who costarred with Joe Chen and Jia Nailiang in \"Destined to Love You\"?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the producer of Breaking Point?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What year was the album featuring the trio made up of Posdnuos, Dave, and Maseo, alongside Lebanese-Syrian rapper Eslam Jawaad release?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the director of Mother?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Where do the team that John Grant joined after the 1972 World Cup now play their games ?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "In what city was Steve McDonald born?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "In what city was Stan Andrews born?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who is the father of Richard Grosvenor, 2nd Marquess of Westminster?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was the director of The Alternate?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What genre is Happy Christmas?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What is the capital of Schleswig-Holstein?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": " Steven S. Crompton is a Canadian-born artist known as the artist for a a fantasy role-playing game designed by Ken St. Andre and first published by who?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the screenwriter for Last Night?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What profession does Matt Thiessen and George Thorogood have in common?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What team plays within the Big 12 Conference and has Kevin Bookout playing for them?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "How high on the US \"Billboard\" Hot 100 chart did Dan Smith's song reach in 2013?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the director of Irresistible?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was the director of Overnight Delivery?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was the screenwriter for The Well?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What sport does FK Mladost Ba\u010dki Jarak play?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What is the religion of Ruth Hurmence Green?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was the composer of Adelaide?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was the composer of Grand Prix?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Double Jeopardy is a 1999 film starring an American political activist best known for an ongoing acting career spanning how long?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What 2003 Christmas-themed romantic comedy did Gregor Fisher have a role in?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Two positions were filled in The Voice of Ireland b which British-Irish girl group based in London, England?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the producer of The Body?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who is the mother of George VI?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Jay-Z released his 1996 Rolling Stone-rated \"500 Greatest\" album on which record labels?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the screenwriter for Sea Legs?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "In which year was the King who made the 1925 Birthday Honours born?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Sadok Sassi played for a national team that made its first World Cup in what year?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Which university is a private research university, University of California, Berkeley or Brown University?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the director of Close My Eyes?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "2002\u201303 Inter Milan season was marked by the arrival of what retired Argentine footballer?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the screenwriter for The Crossing?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who does the previous Vice President of Production at the animation studio that is owned and operated by Viacom, currently work for?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What genre is Tricky?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What genre is The Untold?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was born first, Ana\u00efs Lameche or Darren Hayes?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who wrote the jukebox musical depicting the recording session between the \"King of Rock and Roll\" and 3 other famous musicians?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What was the nationality of the actor playing a Russian hostage taker in \"Hostage for a Day\"?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "The head of the Foreign Relations Department of the Rastriya Janashakti Party holds a degree that can be abbreviated MS, M.S., or ScM, in what field?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Hayden is a singer-songwriter from Canada, but where does Buck-Tick hail from?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Which of Jonny Craig and Pete Doherty has been a member of more bands ?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "My Neighbor Totoro was produced by a Japanese animation film studio founded in what year?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What sport does Bernadette Sz\u0151cs play?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Chien-Shiung Wu's expertise in experimental physics evoked comparisons to a scientist who passed away in which year ?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Does Frank Pepe Pizzeria Napoletana or Donatos Pizza have more locations?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who is the author of The Drop?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Which hip hop act that collaborated in the Red Hot AIDS Benefit Series was also a trio that was formed in New York?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the composer of Legend?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What is the name of the album released by a British heavy metal band in February of 1981 that contains a reference to a highway?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What did  the man who  led Sweden to military supremacy during the Thirty Years' War found in 1623?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "In what state did this band form that is an American metalcore band, founded in mid-2009, and whose lead vocalist was Jerry Roush?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What was the name of a land where Maria Anna of Spain's husband was king?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Are Ruggero Deodato from Italy, and Mexican Alejandro Springall, both film directors?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Lost Someone was written by James Brown and an American R&B/soul singer who began his career in 1952 as a member of what gospel group?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the director of Ico?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was the screenwriter for The Great Fire?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was the screenwriter for The Calamari Wrestler?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What genre is C. L. Blast?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "In what country is Stanley?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Ambrose Mendy has managed and/or advised a British professional boxer that as of July 2017 is ranked the world's seventh best super middleweight by who?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "The chicken is a type of dance pattern that is a change of pace of what dance?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Richford is a town in Franklin County Vermont governed by what kind of body?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the producer of Friends?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was the composer of Yvonne, Prinzessin von Burgund?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What animal does Mahratta Greyhound and Tibetan Spaniel have in common?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "\"Text Me Merry Christmas\" is a song performed by Kristen Bell and a group that originated at what univeristy?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What genre is Convicted?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was the director of The Exchange?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "When was the stadium that held the 2015 Magyar Kupa demolished?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the director of House?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What is the name of the number-one single featuring the winner of Celebrity Apprentice 3?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What is the capital of Plesetsky District?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was the composer of Never Forget?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Which restaurant chain's headquarters is further north, Pizza Inn or Papa Gino's?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the producer of The Piano?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What is the religion of California Lutheran University?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Jos\u00e9 Baviera starred in the 1962 film by the filmmaker who worked in what countries?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Finna Get Loose is a song by Puff Daddy and what American rapper who is also a record and film producer?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the screenwriter for The Apple?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was the producer of Seven?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Indie studio Jumpship developed what puzzle-platform video game released in July 2010?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Which magazine is focused more on the adult demographic, Jack and Jill or Paper?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": " Lou Cutell appeared on the third episode of the ninth season of an CBS sitcom that was what number episode overall?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What is Opry Mills in Nashville, Tennessee?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Where was the set for the winner of the WD Weatherford Award in 1998?  ", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the producer of Game?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Worker: What professional title to both Christopher Nolan and Paul Schrader boast?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "In what country is CBE SA?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "The Voyage is a wooden roller coaster located at a theme park divided into how many sections ?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What is Elvin Penner's occupation?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Lafe Pence was a member of which lower chamber of the United States congress?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What sport does Oleg Imrekov play?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was the screenwriter for The Last Moment?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Which has more members, Dada or Alt-J?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who is older, Jed Hoyer or John William Henry II?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the composer of Baby?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What is the capital of Arizona?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What is the area of the desert that Ghanzi is in the middle of?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who is the author of Hammered?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What is the religion of Loa?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "The King of Hollywood starred in what 1932 American pre-Code dram film?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Author David Chanoff has collaborated with a U.S. Navy admiral who served as the ambassador to the United Kingdom under which President?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What sport does Luis Rivera play?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Are Harry Everett Smith and Vladimir Danilevich both from Russia?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "David Huntsinger has worked with this gospel singer born in the month of July?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What genre is At Sunset?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "When was Aimee Carrero's depiction of Angie first aired?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who produced the 2004 major release sequel of Shrek 2?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Easter Airways' head office is located at which airport owned by Manchester Airports Group?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "In what country is Kuujjuarapik?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Richard M\u00fcnch portrayed the German general who served in what capacity during WWII in the 1970 movie Patton?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the director of First Love?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Which author found inspiration in their career prior to writing, Hart Crane or John le Carr\u00e9?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What genre is Episode?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was the producer of Jane?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "The creator of \"Wallace and Gromit\" also created what animation comedy that matched animated zoo animals with a soundtrack of people talking about their homes? ", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the director of Leader?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who is the father of Nathan?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Giselle Cossard was known as Mother Giselle of what type of diety?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What is special about the wristwatches that Favre-Leuba manufactures?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who were the guns stolen from the HMS ship \"Marlin\" originally produced for?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Which species is the most numerous, Podocarpus or Osmunda? ", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the screenwriter for The Night They Raided Minsky's?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who is the author of Unreal?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was the composer of Metroid?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "The author of the \"The Dagger and the Coin\" fantasy series was nominated for what award in 2017?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the producer of Thunderbirds Are Go?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What sport does Logi Geirsson play?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Flower Alley was bred by the trainer who was killed at what Fayette County, Kentucky airport?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What created the terrirtories of Kansas and Nebraska and was combated by the The Republican Party?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Lollipop Chainsaw featured Juliet Starling, who was voiced by a Canadian-American actress who has done voice roles for what Teen Titans spinoff series?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the director of The Christmas Tree?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was the director of Breaking News?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What genre is Play the Game?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was the director of Sunset Limousine?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Which American novelist was notable primarily for publishing science fiction, Allen Drury or Philip K. Dick?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who is the author of Looking Back?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "which league is the 121th season of top-tier competitive football in Switzerland which Ulrich Forte coach FC Z\u00fcrich in the league ", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who is the author of Pan?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What genre is No Doubt?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who replaced the manager of the Aston Villa that began at Leeds United?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What genre is Chip?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was the director of Lebanon?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What performing traditionally from the longest continental mountain range in the world, are Grupo Aymara famous for?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Which filmmaker is considered a pioneer, Herschell Gordon Lewis or Leah Meyerhoff?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What age did a wrestler began his training at who began his friendship with Trevor Mann in Brookport, Illinois CPW?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Are Hungry Hungry Hippos and Parcheesi both published by Parker Brothers?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Which U.S. State contains tropical wetlands and Diamondback Airboats?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "At what summer festival might you find music by Bakermat?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What genre is Love Songs?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "The telenova \"El Ardiente Secreto\" was based ona novel published under what pen name?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Which plane has seen more combat, the Northrop F-15 Reporter or the Northrop P-61 Black Widow?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "The organization that Nicolae Titulescu served two terms as president was founded on what date?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who is the author of A Positive?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "In what city does the most successful American and international five-and-dime business have a historic building?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What city does the company that owns Bumble and bumble have its headquarters in?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What band is a tribute to a band originally known as the Grizzly River Boys?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What is the capital of Province of Cremona?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was the composer of Strong?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who is the author of A Legacy?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was the screenwriter for The Russia House?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was the director of Monster?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What school was the actress who appeared with Michelle Williams in the last play by Russian playwright Anton Chekhov attending when she was signed on for a talent holding deal?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What sport does Paulo Grilo play?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who is the author of Stiff?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who is younger, Martin Luther King III or his brother Dexter?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Claudine's Return starred the actress who played which role on \"Married...with Children\"?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What genre is The Matrix?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was the director of China?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was the producer of Lucky?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who is the author of Mass?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "The Red Queen's Race is a science fiction short story that uses the Red Queen's race from a novel by Lewis Carroll that is the sequel to what?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "The structure in Wyoming in which Bo\u0159e\u0148 is similar to has a summit that is how many feet above sea level?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Who was the screenwriter for The Emerald City?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "When was the head coach representing the Eastern Conference during the 2000 NBA All-Star Game born?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What is Paddy Mullins's occupation?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who co-starred in an episode of The ABC Comedy Hour with the man who played Duke Slater in \"Gomer Pyle, U.S.M.C.\"? ", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Was Suzanne Chun Oakland a member of the upper of lower chamber of the Hawaii State Legislature?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What 2014 Ottawa Fury goalkeeper coach missed a shot deflected off Ronnie Whelan in the 1987 Football League Cup Final?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "Which movie was filmed first \"The Guest\" or \"You're Next\"?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "At what university can the building that served as the fictional household that includes Gomez and Morticia be found?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What genre is My Body Sings Electric?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was the producer of Joe?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "What is the happiest town Sarasota county Florida?", "label": "COMPLEX", "dataset_source": "hotpotqa"}
+{"query": "What is Ruth Harriet Louise's occupation?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was the producer of The Wild Life?", "label": "SIMPLE", "dataset_source": "popqa"}
+{"query": "Who was the producer of Swan Lake?", "label": "SIMPLE", "dataset_source": "popqa"}

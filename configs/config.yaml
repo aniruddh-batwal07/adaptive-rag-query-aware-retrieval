@@ -1,6 +1,6 @@
 models:
   router:
-    name: "microsoft/deberta-v3-small"
+    name: "distilbert-base-uncased"
     checkpoint: null
   embeddings:
     name: "BAAI/bge-small-en-v1.5"
