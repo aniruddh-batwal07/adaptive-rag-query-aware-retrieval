@@ -5,7 +5,7 @@ models:
   embeddings:
     name: "BAAI/bge-small-en-v1.5"
   compressor:
-    name: "llmlingua"
+    name: "microsoft/llmlingua-2-bert-base-multilingual-cased-meetingbank"
   generator:
     name: "HuggingFaceTB/SmolLM-135M-Instruct"
 
@@ -22,7 +22,7 @@ routing:
 
 compression:
   enabled: true
-  budget: null
+  budget: 0.5
 
 generation:
   temperature: 0.1
