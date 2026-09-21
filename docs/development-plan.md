@@ -1,8 +1,8 @@
 # AdaptiveRAG — Development Plan
 
-> **Status:** Roadmap v1.0  
-> **Derived from:** [`prod-spec.md`](prod-spec.md) · [`architecture.md`](architecture.md)  
-> **Project:** AdaptiveRAG — Adaptive Retrieval-Augmented Generation using Query Complexity and Context Optimization  
+> **Status:** Roadmap v2.0 (revised for minimum research-valid scope)
+> **Derived from:** [`prod-spec.md`](prod-spec.md) · [`architecture.md`](architecture.md)
+> **Project:** AdaptiveRAG — Adaptive Retrieval-Augmented Generation using Query Complexity and Context Optimization
 > **Purpose:** Convert the architecture into an executable, dependency-ordered implementation roadmap
 
 ---
@@ -13,7 +13,7 @@
 prod-spec.md        →  WHAT and WHY
 architecture.md     →  HOW the system is structured
 development-plan.md →  WHEN / IN WHAT ORDER / HOW TO VERIFY
-implementation      →  actual code
+src/                →  actual code
 ```
 
 This plan does not restate the architecture or product specification. It tells the team what to do next, in what order, and how to verify it.
@@ -22,1639 +22,648 @@ This plan does not restate the architecture or product specification. It tells t
 
 ## Current Repository State
 
-As of the creation of this plan, the repository contains:
+As of commit `674dab7` (M6.1 acceptance), the repository contains:
 
 ```text
 adaptive-rag-query-aware-retrieval/
-├── .git/
+├── configs/config.yaml              ← Working configuration
+├── datasets/                        ← Dataset loading, splitting, corpus, index builds
+│   ├── load_dataset.py              ← PopQA + HotpotQA download/normalize
+│   ├── prepare_data.py              ← Train/val/test splits (70/15/15)
+│   ├── build_corpus.py              ← Fixed chunking (512 tokens, 50 overlap)
+│   ├── build_index.py               ← ChromaDB index construction
+│   ├── fixtures_loader.py           ← Local dev fixture loader
+│   └── [raw/, corpus/, splits/]     ← Data artifacts (git-ignored large files)
+├── src/
+│   ├── utils/                       ← Config, logger (complete)
+│   ├── retriever/                   ← Embeddings, vector store, retriever (complete)
+│   ├── generator/                   ← ResponseGenerator with SmolLM (complete)
+│   ├── optimizer/                   ← ContextOptimizer with LLMLingua-2 (complete)
+│   ├── pipeline/adaptive_rag.py     ← Pipeline: supports llm_only + fixed_rag modes
+│   ├── router/                      ← __init__.py only — NOT YET IMPLEMENTED
+│   └── evaluation/                  ← __init__.py only — NOT YET IMPLEMENTED
+├── tests/                           ← 73 tests passing (M6.1 baseline)
+├── scripts/run_pipeline.py          ← CLI entry point for baselines
 └── docs/
-    ├── prod-spec.md
-    ├── architecture.md
-    └── development-plan.md   ← this file
 ```
 
-**There is no application code, no scaffolding, no configuration, no dependencies, no tests.**
-
-All implementation milestones begin from this baseline.
-
----
-
-## Hardware Integration
-
-> **This is a pure software project.**  
-> No physical hardware (microcontrollers, sensors, actuators, robotic arms) is required or planned. All milestones are software-only.  
-> Model inference runs on consumer GPU or CPU — see ADR-001 and ADR-008 in `architecture.md`.
+**What works:** Baselines A (LLM Only) and B (Fixed RAG) are functional end-to-end.
+**What does not exist yet:** Evaluation metrics, benchmark runner, complexity router, adaptive controller, Baseline C (Always-Compress), Baseline D (AdaptiveRAG).
 
 ---
 
 ## Execution Principles
 
-1. **Small milestones** — every milestone produces one testable outcome.
-2. **Verify before proceeding** — do not advance until the current milestone's definition of done is met.
-3. **Vertical slices** — prefer a thin end-to-end slice over building every subsystem in isolation.
-4. **Dependency-aware** — do not build the adaptive system before its components work independently.
-5. **Baselines first** — build all baselines before the adaptive comparison.
-6. **Evaluation early** — build metric infrastructure before large-scale experiments.
-7. **Configuration-driven** — no magic constants; every parameter lives in config.
+1. **Vertical slices** — prefer a thin end-to-end slice over many isolated subsystems.
+2. **Verify before proceeding** — do not advance until the current milestone's acceptance gate is met.
+3. **Configuration-driven** — all experiment-sensitive parameters live in `configs/config.yaml`.
+4. **Fairness first** — all four baselines must run on the same index, corpus, embedding model, generator, and test split.
+5. **Research first** — every milestone directly supports the scientific question; engineering ceremony is minimized.
 
 ---
 
-## Phase Overview
+## Completed Milestone History (Do Not Modify)
 
-| Phase | Name | What It Produces |
+| Milestone | Description | Status |
 |---|---|---|
-| **0** | Foundation | Working repo structure, config, dev fixtures |
-| **1** | Data Pipeline | Loadable, split, chunked datasets + vector index |
-| **2** | Generator Interface | Generator loads and produces answers |
-| **3** | First Vertical Slice ⭐ | query → retrieve → generate → answer |
-| **4** | Baseline A — LLM Only | Generator answers without retrieval |
-| **5** | Baseline B — Fixed RAG | Fixed-K retrieval + generator, evaluated |
-| **6** | Context Compression | LLMLingua integrated and measured |
-| **7** | Baseline C — Always-Compress RAG | Full compress pipeline, evaluated |
-| **8** | Evaluation Infrastructure | All metrics validated on controlled examples |
-| **9** | Complexity Router | Trained router producing SIMPLE/COMPLEX labels |
-| **10** | Adaptive Controller | Both routing paths work and are verified |
-| **11** | Baseline D — AdaptiveRAG | Full adaptive pipeline, evaluated |
-| **12** | Experiment Fairness Checkpoint | All baselines verified on identical conditions |
-| **13** | Primary Benchmark | Comparative results for all four systems |
-| **14** | Ablations | Compression and adaptive-K ablations |
-| **15** | Error Analysis | Representative failures inspected |
-| **16** | Reproducibility Checkpoint | Full rerun verified from config |
-| **17** | MVP Hard Stop ✋ | MVP acceptance criteria satisfied |
-| **18** | Demo (Optional, Post-MVP) | Lightweight interactive demonstration |
+| M0.1 | Repository structure | ✅ Complete |
+| M0.2 | Configuration system | ✅ Complete |
+| M0.3 | Logging + pytest infrastructure | ✅ Complete |
+| M0.4 | Dev fixtures | ✅ Complete |
+| M1.1 | Dataset loading (PopQA + HotpotQA) | ✅ Complete |
+| M1.2 | Train/val/test splits | ✅ Complete |
+| M1.3 | Corpus preparation and chunking | ✅ Complete |
+| M1.4 | Embedding model (BAAI/bge-small-en-v1.5) | ✅ Complete |
+| M1.5 | Vector index (ChromaDB) | ✅ Complete |
+| M1.6 | Top-K retrieval | ✅ Complete |
+| M2.1 | Generator model (SmolLM-135M-Instruct) | ✅ Complete |
+| M2.2 | Prompt construction | ✅ Complete |
+| M3.1 | Query preprocessor | ✅ Complete |
+| M3.2 | ⭐ First vertical slice | ✅ Complete |
+| M4.1 | Baseline A — LLM Only | ✅ Complete |
+| M5.1 | Baseline B — Fixed RAG | ✅ Complete |
+| M6.1 | LLMLingua-2 context compression | ✅ Complete |
+
+**ADR resolutions recorded by implementation:**
+- **ADR-001** Generator: `HuggingFaceTB/SmolLM-135M-Instruct` (selected for CPU/low-VRAM compatibility; replaces Phi-3-mini)
+- **ADR-003** Embeddings: `BAAI/bge-small-en-v1.5` ✓
+- **ADR-004** Vector store: ChromaDB ✓
+- **ADR-006** Compression budget: 0.5 (initial default; validate on val set)
+- **ADR-002, ADR-005, ADR-007** remain open (router model, K values, confidence threshold)
 
 ---
 
-## Parallel Work Opportunities
+## Remaining Roadmap Overview
 
-The following tasks do not block each other and can proceed in parallel once Phase 0 is complete:
-
-| Track A | Track B |
-|---|---|
-| Data loading + chunking (M1.x) | Evaluation metric implementation (M8.x) |
-| Generator interface (M2.x) | Config scaffolding (M0.x) |
-| Unit-test infrastructure (M0.3) | Router data preparation (M9.1) |
-
-All other phases have hard sequential dependencies.
-
----
-
-## Milestone Notation
-
-- **M{phase}.{step}** — milestone identifier
-- **ADR Required** — an open architectural decision must be resolved before starting
-- **⭐ First Vertical Slice** — minimum viable end-to-end path
-
----
-
----
-
-# Phase 0 — Foundation
-
-> **Goal:** A usable repository structure, working configuration system, and dev fixtures so all subsequent implementation can begin cleanly.
-
----
-
-### M0.1 — Repository Structure
-
-**Objective:** Create the directory layout defined in `architecture.md §15`.
-
-**Prerequisites:** None.
-
-**ADRs Required:** None.
-
-**Expected directories/files:**
-
-```text
-src/router/
-src/retriever/
-src/optimizer/
-src/generator/
-src/pipeline/
-src/evaluation/
-src/utils/
-datasets/
-scripts/
-configs/
-tests/
-results/
-notebooks/
-requirements.txt
-```
-
-**Expected behavior:** `import src.utils.config` works without error.
-
-**Tests / Verification:** Directory structure matches `architecture.md §15.1`.
-
-**Definition of Done:**
-- [ ] All directories exist.
-- [ ] All `__init__.py` files present in `src/` subdirectories.
-- [ ] `requirements.txt` lists known dependencies (even if unpinned initially).
-
-**Deliverable:** Repository structure matching the architecture's module layout.
-
----
-
-### M0.2 — Configuration System
-
-**Objective:** Implement `src/utils/config.py` — loads YAML config, validates required keys, exposes typed values.
-
-**Prerequisites:** M0.1.
-
-**ADRs Required:**
-- **ADR-005** (K values): Use defaults K_simple=2, K_complex=10, K_baseline=5 for now.
-
-**Expected files:**
-- `src/utils/config.py`
-- `configs/config.yaml` (with schema defined in `architecture.md §10.1`)
-
-**Expected behavior:** `config = load_config("configs/config.yaml")` returns a populated config object. Invalid config raises a clear error immediately.
-
-**Tests / Verification:**
-- Unit test: valid config loads correctly.
-- Unit test: missing required key raises an informative error.
-- Unit test: K values match defaults.
-
-**Definition of Done:**
-- [ ] Config loads from YAML without error.
-- [ ] All parameters from `architecture.md §10.1` are accessible.
-- [ ] Invalid config fails fast with a human-readable message.
-- [ ] Unit tests pass.
-
-**Deliverable:** Working configuration system; `configs/config.yaml` with all known parameters.
-
----
-
-### M0.3 — Logging and Test Infrastructure
-
-**Objective:** Implement `src/utils/logger.py` and set up `pytest` so tests can run from day one.
-
-**Prerequisites:** M0.1.
-
-**ADRs Required:** None.
-
-**Expected files:**
-- `src/utils/logger.py`
-- `tests/conftest.py`
-- `tests/test_config.py` (from M0.2)
-
-**Expected behavior:** `pytest tests/` runs and exits cleanly (even if all tests are stubs initially).
-
-**Definition of Done:**
-- [ ] `pytest` runs without import errors.
-- [ ] Logger produces structured output with timestamp and component name.
-- [ ] M0.2 config unit tests pass within this infrastructure.
-
-**Deliverable:** Functional test harness and logging utility.
-
----
-
-### M0.4 — Dev Fixtures
-
-**Objective:** Create a tiny local fixture dataset (10–20 examples each for SIMPLE-proxy and COMPLEX-proxy queries) that can be used for all integration tests without downloading large datasets.
-
-**Prerequisites:** M0.1, M0.2.
-
-**ADRs Required:** None.
-
-**Expected files:**
-- `datasets/fixtures/simple_queries.json`
-- `datasets/fixtures/complex_queries.json`
-
-**Format:** Each example: `{ "query": "...", "reference_answer": "...", "complexity_label": "SIMPLE"|"COMPLEX" }`.
-
-**Expected behavior:** Fixtures load with a helper function; no network dependency.
-
-**Definition of Done:**
-- [ ] 10+ SIMPLE-proxy examples.
-- [ ] 10+ COMPLEX-proxy examples (multi-hop style).
-- [ ] Helper function loads fixtures without network access.
-- [ ] Fixtures are deterministic and version-controlled.
-
-**Deliverable:** Local dev fixtures usable in all subsequent integration tests.
-
----
-
-### Checkpoint A — Foundation Ready
-
-> **Gate:** M0.1 + M0.2 + M0.3 + M0.4 complete. Config loads, pytest runs, fixtures exist. All subsequent work can begin.
-
-**Risks at this phase:**
-
-| Risk | Detection | Fallback |
+| Milestone | Name | What It Produces |
 |---|---|---|
-| Dependency conflicts in requirements.txt | `pip install` errors | Pin specific versions; test in clean venv |
-| Config schema gaps discovered later | Missing key errors during integration | Update schema; config system must not fail silently |
-
----
-
----
-
-# Phase 1 — Data Pipeline
-
-> **Goal:** Load PopQA and HotpotQA, create train/validation/test splits, chunk the corpus, and build the vector index.
-
----
-
-### M1.1 — Dataset Loading
-
-**Objective:** Implement `datasets/load_dataset.py` — downloads and normalizes PopQA and HotpotQA. Preserves question, reference answer, supporting document information, and dataset split.
-
-**Prerequisites:** M0.2 (config for dataset parameters).
-
-**ADRs Required:**
-- **ADR-005**: Sample limits per dataset (initial: ~1,000 per dataset from product spec).
-
-**Expected files:**
-- `datasets/load_dataset.py`
-
-**Expected behavior:**
-- Running the script produces normalized JSON/JSONL files in `datasets/raw/`.
-- Each entry retains: `query`, `answer`, `supporting_docs` (where available), `dataset_source`, `split`.
-
-**Tests / Verification:**
-- Verify at least one PopQA and one HotpotQA example loaded with all required fields.
-- Verify counts match configured sample limits.
-
-**Definition of Done:**
-- [ ] PopQA loads without error.
-- [ ] HotpotQA loads without error.
-- [ ] Both datasets normalized to a common schema.
-- [ ] No reference answers leaked into query fields.
-
-**Deliverable:** Raw normalized datasets in `datasets/raw/`.
-
----
-
-### M1.2 — Train / Validation / Test Splits
-
-**Objective:** Implement `datasets/prepare_data.py` — creates reproducible TRAIN/VALIDATION/TEST splits.
-
-**Prerequisites:** M1.1.
-
-**ADRs Required:** None (split ratios are implementation decisions; start with 70/15/15 or similar).
-
-**Expected files:**
-- `datasets/prepare_data.py`
-- `datasets/splits/` (train.jsonl, val.jsonl, test.jsonl)
-
-**Critical constraint from product spec:** Test examples must not be used for tuning router thresholds or K values.
-
-**Expected behavior:** Fixed random seed produces identical splits on every run.
-
-**Tests / Verification:**
-- Verify no query appears in both train and test.
-- Verify split counts are logged and recorded.
-- Verify random seed reproduces identical splits.
-
-**Definition of Done:**
-- [ ] Three splits produced (TRAIN, VALIDATION, TEST).
-- [ ] No query overlap between TRAIN and TEST.
-- [ ] Split creation is deterministic (seeded).
-- [ ] Split metadata (counts, seed) is saved alongside splits.
-
-**Deliverable:** Reproducible data splits; leakage verified.
-
----
-
-### M1.3 — Corpus Preparation and Chunking
-
-**Objective:** Implement corpus construction and fixed chunking.
-
-**Prerequisites:** M1.1, M0.2 (chunk_size and chunk_overlap from config).
-
-**ADRs Required:** None (chunk_size and chunk_overlap are configurable defaults to be validated later).
-
-**Expected files:**
-- `datasets/prepare_data.py` (extended)
-- `datasets/corpus/` (chunked documents)
-
-**Expected behavior:**
-- Supporting documents are chunked with configurable `chunk_size` and `chunk_overlap`.
-- Each chunk retains `document_id`, `chunk_id`, `text`, `source_metadata`.
-- All baselines will use this identical corpus.
-
-**Tests / Verification:**
-- Verify chunks have expected fields.
-- Verify chunk_overlap produces expected overlap.
-- Verify total chunk count is logged.
-
-**Definition of Done:**
-- [ ] Corpus chunked and saved.
-- [ ] `chunk_size` and `chunk_overlap` read from config (not hard-coded).
-- [ ] Each chunk has `document_id`, `chunk_id`, `text`.
-- [ ] Chunking is deterministic.
-
-**Deliverable:** Chunked corpus ready for indexing.
-
----
-
-### M1.4 — Embedding Model Integration
-
-**Objective:** Implement `src/retriever/embeddings.py` — loads the embedding model and encodes text.
-
-**Prerequisites:** M0.2.
-
-**ADRs Required:**
-- **ADR-003**: Embedding model. **Current direction: `BAAI/bge-small-en-v1.5`.** Must be confirmed based on resource usage and retrieval quality on validation set before indexing.
-
-**Expected files:**
-- `src/retriever/embeddings.py`
-
-**Expected behavior:**
-- `embed(text: str) -> vector` works.
-- `embed_batch(texts: list) -> list[vector]` works.
-- Model loads from config-specified name.
-
-**Tests / Verification:**
-- Encode a known query; verify output is a float vector of expected dimensionality.
-- Verify two semantically similar queries produce closer vectors than two dissimilar ones (sanity check).
-
-**Definition of Done:**
-- [ ] Embedding model loads from config.
-- [ ] Single and batch encoding work.
-- [ ] Embedding dimensionality logged.
-- [ ] Unit test passes.
-
-**Deliverable:** Embedding model interface; embeddings can be produced.
-
----
-
-### M1.5 — Vector Index Construction
-
-**Objective:** Implement `src/retriever/vector_store.py` — builds and persists the ChromaDB index from the chunked corpus.
-
-**Prerequisites:** M1.3, M1.4.
-
-**ADRs Required:**
-- **ADR-004**: Vector store. **Current direction: ChromaDB.** Confirm before building large index.
-
-**Expected files:**
-- `src/retriever/vector_store.py`
-- `datasets/build_index.py`
-- `data/index/` (persisted ChromaDB files)
-
-**Expected behavior:**
-- Running `build_index.py` produces a persistent ChromaDB collection.
-- Collection stores chunk embeddings and metadata.
-- Index is deterministic: same corpus + same embedding model = same index.
-
-**Tests / Verification:**
-- Insert 5 known chunks; verify they are retrievable.
-- Verify persisted index can be reloaded without rebuilding.
-
-**Definition of Done:**
-- [ ] Index built and persisted.
-- [ ] Index reloads correctly without re-embedding.
-- [ ] Metadata (document_id, chunk_id, text) retrievable with embeddings.
-- [ ] Index build time logged.
-
-**Deliverable:** Persistent vector index ready for retrieval.
-
----
-
-### M1.6 — Top-K Retrieval
-
-**Objective:** Implement `src/retriever/retriever.py` — exposes `retrieve(query, top_k) -> RankedDocuments`.
-
-**Prerequisites:** M1.4, M1.5.
-
-**Expected files:**
-- `src/retriever/retriever.py`
-
-**Expected behavior:**
-- Given a query string and integer K, returns K ranked chunks.
-- Each result includes `document_id`, `chunk_id`, `text`, `score`, `rank`.
-- Different K values return different counts.
-
-**Tests / Verification:**
-- Known query + known corpus → verify expected top-1 chunk is returned.
-- Verify K=2 returns exactly 2 results.
-- Verify K=10 returns exactly 10 results (or all if corpus < 10).
-- Verify results are ranked by score.
-
-**Definition of Done:**
-- [ ] `retrieve(query, top_k)` returns correctly ranked chunks.
-- [ ] All required metadata fields present in each result.
-- [ ] Retrieval is deterministic given the same index and query.
-- [ ] Retrieval latency is measured and logged.
-- [ ] Unit + integration tests pass.
-
-**Deliverable:** Working retriever interface. The retrieval layer is now independently functional.
-
----
-
-### Checkpoint B — Data & Retrieval Ready
-
-> **Gate:** M1.1–M1.6 complete. Data is loaded, split, chunked, indexed, and retrievable. The retrieval layer works independently. Evaluation metrics for retrieval can be implemented in parallel.
-
-**Risks at this phase:**
-
-| Risk | Detection | Fallback |
-|---|---|---|
-| Embedding model too large for hardware | OOM error during M1.4 | Switch to smaller model; requires ADR-003 update |
-| ChromaDB indexing too slow | Time log during M1.5 | Evaluate FAISS; requires ADR-004 update |
-| Chunk size produces poor retrieval | Retrieval sanity check in M1.6 | Adjust chunk_size in config and rebuild |
-
----
-
----
-
-# Phase 2 — Generator Interface
-
-> **Goal:** The generator model loads and produces answers from query + context. No routing or retrieval yet.
-
----
-
-### M2.1 — Generator Model Loading
-
-**Objective:** Implement `src/generator/response_generator.py` — loads the generator LLM and runs inference.
-
-**Prerequisites:** M0.2.
-
-**ADRs Required:**
-- **ADR-001**: Generator model. **Current direction: Phi-3-mini-4k-instruct.** Must be confirmed based on VRAM, inference stability, and context capacity before this milestone can begin. This is a blocking decision.
-
-**Expected files:**
-- `src/generator/response_generator.py`
-
-**Expected behavior:**
-- Model loads from config-specified identifier.
-- `generate(query, context) -> GeneratedAnswer` works.
-- Temperature, max_new_tokens, and seed are read from config.
-
-**Tests / Verification:**
-- Load model; run one inference with a short context; verify a non-empty string is returned.
-- Verify generation is deterministic with a fixed seed.
-- Log VRAM usage and generation latency.
-
-**Definition of Done:**
-- [ ] Generator loads from config.
-- [ ] `generate(query, context)` returns a non-empty answer string.
-- [ ] Generation latency measured and logged.
-- [ ] VRAM usage recorded.
-- [ ] Temperature, max_new_tokens, seed are config-driven.
-
-**Deliverable:** Generator interface that can be used by any baseline.
-
----
-
-### M2.2 — Prompt Construction
-
-**Objective:** Implement the fixed prompt template from `architecture.md §4.9`.
-
-**Prerequisites:** M2.1.
-
-**Expected files:**
-- `src/generator/response_generator.py` (extended)
-
-**Prompt contract:**
+| **M7** | Evaluation Infrastructure | All metrics + benchmark runner validated |
+| **M8** | Compression Fallback + Baseline C | Always-Compress pipeline complete + evaluated |
+| **M9** | Complexity Router | Trained router with SIMPLE/COMPLEX classification, independently evaluated |
+| **M10** | Adaptive Controller + Baseline D + CLI Demo | Full AdaptiveRAG pipeline complete + evaluated + mandatory demo trace |
+| **M11** | Primary Benchmark | All 4 baselines compared on identical test conditions |
+| **M12** | Ablation + Error Analysis | Compression ablation + representative failure inspection |
+| **MVP STOP ✋** | Research package | Analysis, reproducibility metadata, report packaging |
+
+**Target: 6 meaningful remaining milestones + stop condition.**
+
+All remaining milestones flow sequentially:
 
 ```text
-Question:
-    <query>
-
-Context:
-    <retrieved or compressed context>
+M7 (Evaluation Infrastructure)
+  ↓
+M8 (Compression Fallback + Baseline C)
+  ↓
+M9 (Complexity Router)
+  ↓
+M10 (Adaptive Controller + Baseline D)
+  ↓
+M11 (Primary Benchmark — all 4 baselines)
+  ↓
+M12 (Ablation + Error Analysis)
+  ↓
+MVP STOP ✋
 ```
 
-**Expected behavior:** Prompt is assembled identically for every baseline. Prompt template is not embedded in pipeline logic — it lives in the generator module.
-
-**Tests / Verification:**
-- Unit test: given query + context strings, prompt is correctly assembled.
-- Verify template does not change between SIMPLE and COMPLEX paths.
-
-**Definition of Done:**
-- [ ] Prompt assembled correctly from query + context.
-- [ ] Template is identical across simple and complex paths (verified by unit test).
-- [ ] Prompt template is not hard-coded in pipeline logic.
-
-**Deliverable:** Consistent prompt construction used by all baselines.
-
 ---
 
 ---
 
-# Phase 3 — First Vertical Slice ⭐
+# M7 — Evaluation Infrastructure
 
-> **Goal:** A minimal end-to-end path: query → preprocess → retrieve (fixed K) → generate → answer. No router, no compression, no evaluation. Just prove data flows.
+> **Objective:** Implement and validate all evaluation metrics and the benchmark runner before any large-scale experiment is executed. Evaluation must be correct before results are meaningful.
 
----
+**Prerequisites:** M6.1 complete.
 
-### M3.1 — Query Preprocessor
+**Implementation scope:**
 
-**Objective:** Implement `src/router/query_classifier.py` or a standalone `preprocessor.py` — validates and normalizes the input query.
+### M7.1 — Answer Quality + Efficiency Metrics
 
-**Prerequisites:** M0.2.
+Implement `src/evaluation/metrics.py`:
 
-**Expected files:**
-- `src/router/complexity_estimator.py` or `src/utils/preprocessor.py`
+- `exact_match(prediction, reference) → float` — binary; case-normalized.
+- `token_f1(prediction, reference) → float` — token-level overlap.
+- `compression_ratio(original_tokens, compressed_tokens) → float`.
+- `count_tokens(text) → int` — using a shared tokenizer or word-split approximation (must be consistent across all baselines).
 
-**Expected behavior:**
-- Empty query rejected with a structured error.
-- Whitespace normalized.
-- Original query preserved alongside normalized query.
-- Preprocessor does not alter semantic meaning.
+Implement `src/evaluation/latency.py`:
 
-**Tests / Verification:**
-- Unit test: empty string → structured error.
-- Unit test: `"  What is X?  "` → `"What is X?"`.
-- Unit test: original query preserved in output.
+- `measure_latency(fn, *args) → (result, latency_ms)` — wraps any callable.
 
-**Definition of Done:**
-- [ ] Empty/invalid queries rejected with a clear error.
-- [ ] Normalized query returned.
-- [ ] Original query preserved.
-- [ ] All unit tests pass.
+**Tests:** Unit tests for known input/output pairs (all four functions). Edge cases: empty string, identical strings, zero tokens.
 
-**Deliverable:** Preprocessor module usable by all pipeline paths.
+### M7.2 — Router Quality Metrics
 
----
+Implement `router_metrics(predictions, labels) → RouterMetrics` in `src/evaluation/metrics.py`:
 
-### M3.2 — Minimal Pipeline (First Vertical Slice)
+- Accuracy, precision (per-class), recall (per-class), F1 (per-class + macro), confusion matrix.
 
-**Objective:** Implement `src/pipeline/adaptive_rag.py` with a minimal pipeline that wires preprocessor → retriever → generator.
+**Tests:** Known prediction/label pairs producing expected per-class values.
 
-**Prerequisites:** M1.6, M2.2, M3.1.
+### M7.3 — Benchmark Runner
 
-**ADRs Required:** ADR-001 (generator model) must already be resolved from M2.1.
+Implement `src/evaluation/benchmark.py`:
 
-**Expected files:**
-- `src/pipeline/adaptive_rag.py`
-- `scripts/run_pipeline.py`
+- `run_benchmark(pipeline_fn, examples, config) → BenchmarkResult`
+  - Accepts a list of examples from `datasets/splits/test.jsonl`.
+  - Calls `pipeline_fn(query)` for each example.
+  - Computes per-example and aggregate EM, F1, latency stats, token stats.
+  - Writes results to `results/<experiment_name>/`:
+    - `config.yaml` — copy of run configuration
+    - `metrics.json` — aggregate metrics
+    - `predictions.jsonl` — per-query: query, reference, prediction, all metadata fields
+    - `latency.csv` — per-query latency breakdown
 
-**Expected behavior:**
+Implement `scripts/evaluate.py` — CLI entry point to run any baseline through the benchmark.
 
-```text
-Query string
-    → Preprocessor (validate + normalize)
-    → Retriever (top_k = baseline_k from config)
-    → Generator (query + retrieved context)
-    → Answer + ExecutionMetadata
-```
+**Tests:** Run benchmark on 10 fixture examples through the Fixed RAG baseline. Verify output files are created and metrics are non-null.
 
-No router, no controller, no compression. Fixed K from config.
+**Out of scope for M7:**
+- Optional metrics (semantic similarity, RAGAS, LLM-as-judge) — remain optional post-MVP.
+- MRR, nDCG — deferred; only Recall@K is required where ground-truth document IDs are available.
+- Real-data benchmark run — reserved for M11.
 
-**Tests / Verification:**
-- Use dev fixtures (M0.4): run a known simple-proxy query.
-- Verify answer string is non-empty.
-- Verify ExecutionMetadata contains: query, retrieval_k, retrieval_latency_ms, generation_latency_ms, total_latency_ms.
-- Verify all metadata is populated (not None/zero).
-
-**Definition of Done:**
-- [ ] End-to-end query → answer works.
-- [ ] ExecutionMetadata populated with latency fields.
-- [ ] Retrieval K read from config.
-- [ ] Integration test passes using dev fixtures.
-
-**Deliverable:** ⭐ **FIRST VERTICAL SLICE** — basic data flow proven end-to-end.
-
----
-
-### Checkpoint B+ — First Vertical Slice Ready
-
-> **Gate:** M3.2 complete. The fundamental query → retrieve → generate → answer path works. Integration problems can now be detected early.
-
----
-
----
-
-# Phase 4 — Baseline A: LLM Only
-
-> **Goal:** Generator produces answers without any retrieval. This is the simplest baseline and validates generator quality in isolation.
-
----
-
-### M4.1 — LLM-Only Pipeline
-
-**Objective:** Implement the LLM-only baseline — query goes directly to generator with no retrieved context.
-
-**Prerequisites:** M2.2, M3.1.
-
-**Expected files:**
-- `src/pipeline/adaptive_rag.py` (extend with baseline mode)
-- `scripts/run_pipeline.py` (extend with `--baseline=llm_only` flag)
-
-**Expected behavior:**
-
-```text
-Query → Preprocessor → Generator (context = empty or minimal prompt) → Answer
-```
-
-No retrieval call. No compression.
-
-**Tests / Verification:**
-- Run 5 fixture queries; verify answers are non-empty.
-- Verify retrieval was NOT called (no retrieval latency in metadata).
-- Verify `ExecutionMetadata.retrieval_k = 0`.
-
-**Definition of Done:**
-- [ ] LLM-only pipeline runs without retrieval.
-- [ ] Metadata correctly shows no retrieval.
-- [ ] Answers are non-empty strings.
-- [ ] Results can be saved to `results/baseline_a/`.
-
-**Deliverable:** Baseline A (LLM Only) functional. First research baseline established.
-
----
-
----
-
-# Phase 5 — Baseline B: Standard Fixed RAG
-
-> **Goal:** Fixed-K retrieval + generator pipeline is implemented, evaluated, and results are saved.
-
----
-
-### M5.1 — Fixed RAG Pipeline
-
-**Objective:** Wire the existing preprocessor + retriever + generator into a clean fixed-RAG baseline with configurable K.
-
-**Prerequisites:** M3.2 (first vertical slice), M4.1 (to confirm pipeline extension pattern).
-
-**Expected files:**
-- `src/pipeline/adaptive_rag.py` (baseline B mode)
-- `scripts/run_pipeline.py` (extend with `--baseline=fixed_rag`)
-
-**Expected behavior:**
-
-```text
-Query → Preprocessor → Retriever(K=baseline_k) → Generator → Answer
-```
-
-`baseline_k` = 5 from config (configurable).
-
-**Tests / Verification:**
-- Run 5 fixture queries with K=5; verify exactly 5 chunks are retrieved.
-- Verify chunk metadata flows through to ExecutionMetadata.
-- Verify results saved to `results/baseline_b/`.
-
-**Definition of Done:**
-- [ ] Fixed RAG pipeline runs with configurable K.
-- [ ] Retrieved chunk metadata present in ExecutionMetadata.
-- [ ] Results saved in machine-readable format.
-- [ ] Integration test passes.
-
-**Deliverable:** Baseline B (Standard Fixed RAG) functional.
-
----
-
-### Checkpoint C — Retrieval Baseline Ready
-
-> **Gate:** M5.1 complete. Fixed RAG with retrieval works end-to-end. The retrieval-to-generation path is proven.
-
----
-
----
-
-# Phase 6 — Context Compression
-
-> **Goal:** LLMLingua is integrated, compression is measured, and compression failure fallback works.
-
----
-
-### M6.1 — LLMLingua Integration
-
-**Objective:** Implement `src/optimizer/context_optimizer.py` — wraps LLMLingua to compress retrieved context.
-
-**Prerequisites:** M0.2 (compression settings from config).
-
-**ADRs Required:**
-- **ADR-006**: Compression budget. Use a reasonable initial default (e.g., ratio=0.5); final value to be selected using validation data later.
-
-**Expected files:**
-- `src/optimizer/context_optimizer.py`
-
-**Expected behavior:**
-
-```text
-compress(query, retrieved_context) → OptimizedContext {
-    text, original_tokens, compressed_tokens, compression_ratio, latency_ms, status
-}
-```
-
-**Tests / Verification:**
-- Pass a known context string (50+ tokens); verify compressed output is shorter.
-- Verify `original_tokens > compressed_tokens`.
-- Verify `compression_ratio = original_tokens / compressed_tokens`.
-- Verify `compression_latency_ms > 0`.
-- Verify `status = SUCCESS`.
-
-**Definition of Done:**
-- [ ] `compress()` returns an `OptimizedContext` with all fields populated.
-- [ ] Token counts are correct.
-- [ ] Compression ratio is calculated correctly.
-- [ ] Compression latency is measured.
-- [ ] All unit tests pass.
-
-**Deliverable:** Compression interface working independently.
-
----
-
-### M6.2 — Compression Failure Fallback
-
-**Objective:** Verify that if compression fails, the original context is preserved and failure is logged.
-
-**Prerequisites:** M6.1.
-
-**Expected behavior:**
-- If LLMLingua raises an exception: `status = FAILED`, original context returned, failure logged.
-- Pipeline continues with uncompressed context.
-
-**Tests / Verification:**
-- Unit test: simulate compressor exception → verify original context returned.
-- Verify `compression_applied = false` in ExecutionMetadata on failure.
-- Verify failure is logged.
-
-**Definition of Done:**
-- [ ] Compressor failure does not crash the pipeline.
-- [ ] Original context returned on failure.
-- [ ] Failure status recorded in metadata.
-- [ ] Unit test for failure path passes.
-
-**Deliverable:** Compression with reliable failure fallback.
-
----
-
----
-
-# Phase 7 — Baseline C: Always-Compress RAG
-
-> **Goal:** Full always-compress pipeline: retrieve K=10 → compress → generate → answer, evaluated and saved.
-
----
-
-### M7.1 — Always-Compress Pipeline
-
-**Objective:** Wire retriever + compressor + generator into the always-compress baseline.
-
-**Prerequisites:** M5.1, M6.2.
-
-**Expected files:**
-- `src/pipeline/adaptive_rag.py` (baseline C mode)
-- `scripts/run_pipeline.py` (extend with `--baseline=always_compress`)
-
-**Expected behavior:**
-
-```text
-Query → Preprocessor → Retriever(K=10) → Compressor → Generator → Answer
-```
-
-Compression always applied. K=10 from config.
-
-**Tests / Verification:**
-- Run 5 fixture queries; verify all have `compression_applied = true`.
-- Verify `compressed_context_tokens < original_context_tokens`.
-- Verify answer is non-empty.
-- Verify all latency fields populated (including `compression_latency_ms`).
-- Verify results saved to `results/baseline_c/`.
-
-**Definition of Done:**
-- [ ] Always-compress pipeline runs end-to-end.
-- [ ] All compression metadata fields populated.
-- [ ] Results saved in machine-readable format.
-- [ ] Integration test passes.
-
-**Deliverable:** Baseline C (Always-Compress RAG) functional.
-
----
-
-### Checkpoint D — Compression Ready
-
-> **Gate:** M7.1 complete. All non-adaptive baselines (A, B, C) are functional. The compression path is proven.
-
----
-
----
-
-# Phase 8 — Evaluation Infrastructure
-
-> **Goal:** All metrics (answer quality, retrieval quality, router quality, efficiency) are implemented and validated on controlled examples before any large-scale experiments.
-
-> **Note:** Evaluation metric implementation (M8.x) can proceed **in parallel** with Phases 1–7 after Phase 0 is complete.
-
----
-
-### M8.1 — Answer Quality Metrics
-
-**Objective:** Implement `src/evaluation/metrics.py` — Exact Match and token-level F1.
-
-**Prerequisites:** M0.1.
-
-**Expected files:**
-- `src/evaluation/metrics.py`
-- `tests/test_metrics.py`
-
-**Expected behavior:**
-- `exact_match(prediction, reference) -> float` returns 1.0 or 0.0.
-- `token_f1(prediction, reference) -> float` returns overlap score.
-
-**Tests / Verification:**
-- `exact_match("Paris", "Paris")` → 1.0.
-- `exact_match("Paris", "London")` → 0.0.
-- `token_f1("the cat sat", "cat sat on mat")` → expected overlap value.
-- Edge cases: empty strings, case sensitivity rules.
-
-**Definition of Done:**
+**Acceptance gate:**
 - [ ] EM and F1 produce correct values on known examples.
-- [ ] Edge cases handled.
-- [ ] Unit tests pass.
+- [ ] Router metrics produce correct confusion matrix on known examples.
+- [ ] Benchmark runner executes Fixed RAG baseline on fixture data and saves machine-readable output.
+- [ ] Latency measurement wraps all pipeline stages.
+- [ ] All unit and integration tests pass.
 
-**Deliverable:** Answer quality metric functions.
-
----
-
-### M8.2 — Retrieval Quality Metrics
-
-**Objective:** Implement Recall@K, MRR, nDCG in `src/evaluation/metrics.py`.
-
-**Prerequisites:** M8.1.
-
-**Expected behavior:**
-- `recall_at_k(retrieved_ids, relevant_ids, k) -> float`
-- `mrr(retrieved_ids, relevant_ids) -> float`
-
-**Tests / Verification:**
-- `recall_at_k(["a", "b", "c"], ["a"], k=3)` → 1.0.
-- `recall_at_k(["b", "c"], ["a"], k=2)` → 0.0.
-- MRR: relevant doc at rank 2 → MRR = 0.5.
-
-**Definition of Done:**
-- [ ] Recall@K, MRR correct on known examples.
-- [ ] Functions handle empty relevant-set gracefully.
-- [ ] Unit tests pass.
-
-**Deliverable:** Retrieval quality metric functions.
-
----
-
-### M8.3 — Router Quality Metrics
-
-**Objective:** Implement accuracy, precision, recall, F1, and confusion matrix for binary SIMPLE/COMPLEX classification.
-
-**Prerequisites:** M8.1.
-
-**Expected behavior:**
-- `router_metrics(predictions, labels) -> RouterMetrics { accuracy, precision, recall, f1, confusion_matrix }`.
-
-**Tests / Verification:**
-- Known predictions vs labels → verify each metric value manually.
-- Confusion matrix has correct SIMPLE/COMPLEX cell counts.
-
-**Definition of Done:**
-- [ ] All router metrics correct on known examples.
-- [ ] Confusion matrix populated correctly.
-- [ ] Unit tests pass.
-
-**Deliverable:** Router quality metric functions.
-
----
-
-### M8.4 — Efficiency and Latency Instrumentation
-
-**Objective:** Implement `src/evaluation/latency.py` — timing utilities and token counting.
-
-**Prerequisites:** M0.1.
-
-**Expected files:**
-- `src/evaluation/latency.py`
-
-**Expected behavior:**
-- `measure_latency(fn) -> (result, latency_ms)` — wraps any function and returns its wall-clock time.
-- `count_tokens(text, tokenizer) -> int` — token count using model tokenizer.
-- `compression_ratio(original_tokens, compressed_tokens) -> float`.
-
-**Tests / Verification:**
-- `measure_latency(time.sleep, 0.1)` → latency ≈ 100ms (±5ms).
-- `compression_ratio(1000, 250)` → 4.0.
-- `count_tokens("Hello world", tokenizer)` → expected count.
-
-**Definition of Done:**
-- [ ] Latency measurement wrapper works.
-- [ ] Token counting works.
-- [ ] Compression ratio formula correct.
-- [ ] Unit tests pass.
-
-**Deliverable:** Latency and token measurement utilities, usable by all pipeline stages.
-
----
-
-### M8.5 — Benchmark Runner
-
-**Objective:** Implement `src/evaluation/benchmark.py` — runs a batch of examples through any pipeline and produces an `EvaluationMetrics` result.
-
-**Prerequisites:** M8.1–M8.4, M5.1 (at least one working baseline to test against).
-
-**Expected files:**
-- `src/evaluation/benchmark.py`
-- `scripts/evaluate.py`
-
-**Expected behavior:**
-- Accepts a list of examples and a pipeline callable.
-- Runs each example; collects answer, metadata, latency.
-- Computes aggregate EM, F1, latency stats, token stats.
-- Saves results to `results/<experiment_name>/`.
-
-**Tests / Verification:**
-- Run benchmark on 10 fixture examples through the fixed-RAG baseline.
-- Verify output file is created.
-- Verify metrics are non-null.
-- Verify result is machine-readable (JSON/JSONL).
-
-**Definition of Done:**
-- [ ] Benchmark runner executes any pipeline callable.
-- [ ] Aggregate metrics computed correctly.
-- [ ] Results saved with experiment metadata.
-- [ ] Integration test with fixed-RAG fixture passes.
-
-**Deliverable:** Benchmark runner; can now evaluate any baseline.
-
----
-
-### Checkpoint E — Evaluation Infrastructure Ready
-
-> **Gate:** M8.1–M8.5 complete. All metric functions are validated. The benchmark runner can evaluate any pipeline. Only now is large-scale evaluation meaningful.
+**Deliverable:** Validated evaluation infrastructure. Any subsequent benchmark is now interpretable.
 
 ---
 
 ---
 
-# Phase 9 — Complexity Router
+# M8 — Compression Fallback + Baseline C (Always-Compress RAG)
 
-> **Goal:** A trained binary classifier produces SIMPLE/COMPLEX labels with measured accuracy and latency. Router is independently validated.
+> **Objective:** Add the compression failure fallback path to the existing `ContextOptimizer`, wire the compressor into the pipeline, and complete Baseline C (Always-Compress RAG).
 
----
+**Prerequisites:** M7 complete.
 
-### M9.1 — Router Training Data Preparation
+**Implementation scope:**
 
-**Objective:** Create labeled (query, complexity_label) pairs for router training from the dataset splits.
+### M8.1 — Compression Failure Fallback
 
-**Prerequisites:** M1.2 (train/val/test splits).
+Extend `src/optimizer/context_optimizer.py`:
 
-**ADRs Required:**
-- **ADR-002**: Router model. **Current direction: DeBERTa-v3-small.** Must be confirmed before training begins. Key criterion: training feasibility on available hardware.
+- If `compress_prompt` raises an exception: return `OptimizedContext { text=original_context, status=FAILED }`, log the failure, and do NOT re-raise.
+- Pipeline must continue with uncompressed context on compression failure.
 
-**Expected files:**
-- `datasets/prepare_data.py` (extended)
-- `datasets/splits/router_train.jsonl`
-- `datasets/splits/router_val.jsonl`
+**Tests:**
+- Unit test: simulate compressor exception via mock → original context returned, status=FAILED.
+- Verify pipeline does not crash on compression failure.
 
-**Labeling strategy from product spec:**
-- PopQA examples → initial SIMPLE proxy
-- HotpotQA examples → initial COMPLEX proxy
-- Mix datasets; do NOT use dataset identity as an explicit feature.
-- Hold out test set; do NOT use test data for label assignment.
+### M8.2 — Baseline C Pipeline Mode
 
-**Leakage check:** Verify no test queries appear in router training data.
+Extend `src/pipeline/adaptive_rag.py` to support `baseline="always_compress"` mode:
 
-**Tests / Verification:**
-- Label distribution is logged (SIMPLE count, COMPLEX count).
-- No test query appears in router train set.
-- Labels are saved as a structured field, not inferred from file path.
+```text
+Query → Preprocessor → Retriever(K=K_complex) → ContextOptimizer → Generator → Answer
+```
 
-**Definition of Done:**
-- [ ] Router train and validation splits created.
-- [ ] Label distribution logged.
-- [ ] Data leakage check passes (no test examples in train).
-- [ ] Labels are explicit fields, not derived from dataset identity at runtime.
+- K = `config.retrieval.k_complex` (default: 10).
+- Compression always invoked.
+- `ExecutionMetadata` must include: `compression_applied`, `original_context_tokens`, `compressed_context_tokens`, `compression_ratio`, `compression_latency_ms`.
 
-**Deliverable:** Labeled router training data.
+Extend `scripts/run_pipeline.py` with `--baseline=always_compress`.
 
----
+**Tests:**
+- Integration test (5 fixture queries): verify `compression_applied=true` for all.
+- Verify `compressed_context_tokens < original_context_tokens`.
+- Verify all latency fields (including `compression_latency_ms`) are populated.
+- Verify results save to `results/baseline_c/`.
 
-### M9.2 — Router Model Interface
+**Out of scope for M8:**
+- Adaptive routing (M10).
+- Benchmark at full scale (M11).
 
-**Objective:** Implement `src/router/query_classifier.py` and `src/router/complexity_estimator.py` — wraps the encoder classifier for SIMPLE/COMPLEX prediction.
+**Acceptance gate:**
+- [ ] Compression failure does not crash the pipeline; original context is preserved and failure is logged.
+- [ ] Always-Compress pipeline runs end-to-end on fixture data.
+- [ ] All metadata fields populated (including compression fields).
+- [ ] Results saved in machine-readable format.
+- [ ] All tests pass (73 existing + new M8 tests).
 
-**Prerequisites:** M9.1, M0.2.
-
-**Expected files:**
-- `src/router/query_classifier.py`
-- `src/router/complexity_estimator.py`
-
-**Expected behavior:**
-- `classify(query: str) -> ComplexityResult { label: SIMPLE|COMPLEX, confidence: float }`.
-- Model name loaded from config.
-- Inference latency measured.
-
-**Tests / Verification (before training):**
-- Verify interface with a randomly initialized model (just structural test).
-- Verify `label` is always `SIMPLE` or `COMPLEX`.
-- Verify `confidence` is in [0, 1].
-- Verify latency is measured.
-
-**Definition of Done:**
-- [ ] `classify()` interface works structurally.
-- [ ] Output fields are validated.
-- [ ] Latency measured.
-- [ ] Unit test (with mock model) passes.
-
-**Deliverable:** Router interface (model weights not yet meaningful — trained next).
+**Deliverable:** Baselines A, B, C all functional. Compression failure fallback verified. Ready for router implementation.
 
 ---
 
-### M9.3 — Router Training
+---
 
-**Objective:** Fine-tune the lightweight encoder classifier on the prepared router training data.
+# M9 — Complexity Router
 
-**Prerequisites:** M9.1, M9.2.
+> **Objective:** Implement, train, and independently evaluate a lightweight binary classifier that produces SIMPLE/COMPLEX labels from query text. Router must be validated before being wired into the adaptive pipeline.
 
-**Expected files:**
-- `scripts/train_router.py`
-- `models/router/` (trained checkpoint)
+**Prerequisites:** M8 complete (data splits already exist from M1.2).
 
-**Expected behavior:**
-- Training completes without OOM.
-- Validation accuracy is logged per epoch.
-- Best checkpoint is saved.
-- Training time is recorded.
+**Implementation scope:**
 
-**ADR check:** If training OOMs or takes unreasonably long, ADR-002 may need to be revisited.
+### M9.1 — Router Training Data
 
-**Definition of Done:**
-- [ ] Training completes.
+Create labeled (query, complexity_label) pairs from existing data splits.
+
+- Source: `datasets/splits/train.jsonl`, `datasets/splits/val.jsonl`.
+- Labels: PopQA examples → `SIMPLE` (proxy); HotpotQA examples → `COMPLEX` (proxy).
+- Store as `datasets/splits/router_train.jsonl`, `datasets/splits/router_val.jsonl`.
+- **Critical:** Labels must be explicit fields; dataset source must NOT be an input feature to the classifier.
+- **Critical:** No test queries in router training data (leakage check must pass).
+
+**ADR-002 resolution required before training:** Confirm router model. Default direction: `microsoft/deberta-v3-small`. The model must be trainable on available hardware. If not feasible, select another lightweight encoder classifier and update the ADR.
+
+**Tests:** Label distribution logged. Leakage check: confirm no test query appears in `router_train.jsonl`.
+
+### M9.2 — Router Interface + Training
+
+Implement `src/router/query_classifier.py`:
+
+- `classify(query: str) → ComplexityResult { label: SIMPLE|COMPLEX, confidence: float, latency_ms: float }`
+- Model name loaded from config (`config.models.router.name`).
+- Checkpoint path loaded from config (`config.models.router.checkpoint`).
+- Latency measured per inference call.
+
+Implement `scripts/train_router.py`:
+
+- Fine-tunes the encoder classifier on `router_train.jsonl`.
+- Logs validation accuracy per epoch.
+- Saves best checkpoint to `models/router/`.
+- Records training time and hardware.
+
+**Tests (structural, before training):** Verify interface with a randomly initialized model — label is always SIMPLE or COMPLEX, confidence in [0, 1], latency measured.
+
+### M9.3 — Router Evaluation
+
+Implement `scripts/evaluate_router.py` (or extend `scripts/evaluate.py`):
+
+- Evaluate trained router on `router_val.jsonl` using `router_metrics()` from M7.
+- Output: accuracy, precision, recall, F1, confusion matrix saved to `results/router_eval/metrics.json`.
+- Log 5 false-positive and 5 false-negative examples for manual inspection.
+- Verify router is not trivially learning dataset membership by inspecting error distribution.
+
+Measure and record router inference latency (per-query).
+
+**ADR-005 decision point:** Review K values (K_simple=2, K_complex=10) against validation data. Adjust if clearly suboptimal. Record decision.
+
+**Out of scope for M9:**
+- Optional heuristic router comparison (M13.3 — remains deferred).
+- Router threshold optimization if argmax classification is sufficient.
+
+**Acceptance gate:**
+- [ ] Router training completes without OOM.
 - [ ] Best checkpoint saved to `models/router/`.
-- [ ] Validation accuracy ≥ reasonable baseline (>50% — better than random).
-- [ ] Training time and hardware recorded.
+- [ ] Validation accuracy > 50% (at minimum better than random; document actual value).
+- [ ] Router metrics computed and saved (accuracy, precision, recall, F1, confusion matrix).
+- [ ] False-classification examples accessible for inspection.
+- [ ] Router latency measured per inference.
+- [ ] Leakage check passes (no test data in training).
+- [ ] All tests pass.
 
-**Deliverable:** Trained router checkpoint.
-
----
-
-### M9.4 — Router Evaluation
-
-**Objective:** Evaluate the trained router on the held-out validation split. Produce router quality metrics.
-
-**Prerequisites:** M9.3, M8.3.
-
-**Expected files:**
-- `scripts/evaluate.py` (extended for router evaluation)
-- `results/router_eval/metrics.json`
-
-**Expected behavior:**
-- Accuracy, precision, recall, F1, confusion matrix computed on validation set.
-- Error examples (false SIMPLE, false COMPLEX) are logged for inspection.
-
-**Tests / Verification:**
-- Verify confusion matrix sums to total validation set size.
-- Inspect 5 false-positive and 5 false-negative examples manually.
-- Verify router is not simply learning dataset identity (check error distribution).
-
-**Definition of Done:**
-- [ ] Router metrics computed on held-out validation data.
-- [ ] Confusion matrix logged.
-- [ ] False-classification examples are accessible for inspection.
-- [ ] Router latency measured and recorded (per inference).
-
-**Deliverable:** Router validation results; router is independently evaluated.
-
----
-
-### Checkpoint E+ — Router Ready
-
-> **Gate:** M9.4 complete. Router is trained, validated, and independently measured. Ready for integration into the controller.
+**Deliverable:** Trained and independently evaluated complexity router. Ready for integration into the adaptive pipeline.
 
 ---
 
 ---
 
-# Phase 10 — Adaptive Controller and AdaptiveRAG
+# M10 — Adaptive Controller + Baseline D (AdaptiveRAG)
 
-> **Goal:** The routing controller wires the router to the retriever and conditional compressor. Both the SIMPLE and COMPLEX paths are explicitly verified.
+> **Objective:** Implement the adaptive routing controller and wire all components into the full AdaptiveRAG pipeline. Both SIMPLE and COMPLEX routes must be explicitly verified.
 
----
+**Prerequisites:** M9 complete (trained router checkpoint available).
+
+**Implementation scope:**
 
 ### M10.1 — Adaptive Routing Controller
 
-**Objective:** Implement `src/router/routing_logic.py` — converts `ComplexityResult` to `RoutingDecision`.
+Implement `src/router/routing_logic.py`:
 
-**Prerequisites:** M9.2 (router interface).
+- Input: `ComplexityResult`
+- Output: `RoutingDecision { complexity: SIMPLE|COMPLEX, retrieval_k: int, compression_enabled: bool }`
+- Routing policy (from architecture):
+  - SIMPLE → `retrieval_k = K_simple`, `compression_enabled = false`
+  - COMPLEX → `retrieval_k = K_complex`, `compression_enabled = true`
+- All K values read from config. Controller is deterministic. Not an LLM agent.
 
-**Routing policy (from `architecture.md §4.4`):**
-
-| Complexity | retrieval_k | compression_enabled |
-|---|---|---|
-| SIMPLE | `K_simple` (config, default=2) | `false` |
-| COMPLEX | `K_complex` (config, default=10) | `true` |
-
-**ADRs Required:**
-- **ADR-005**: K values. Use defaults K_simple=2, K_complex=10 until validated on validation data.
-
-**Expected files:**
-- `src/router/routing_logic.py`
-
-**Expected behavior:**
-- `ComplexityResult { label: SIMPLE }` → `RoutingDecision { retrieval_k: 2, compression_enabled: false }`.
-- `ComplexityResult { label: COMPLEX }` → `RoutingDecision { retrieval_k: 10, compression_enabled: true }`.
-- All values read from config.
-
-**Tests / Verification:**
-- Unit test: SIMPLE input → K_simple, compression=false.
-- Unit test: COMPLEX input → K_complex, compression=true.
-- Unit test: K values change when config changes.
-
-**Definition of Done:**
-- [ ] Controller is deterministic (same input → same output always).
-- [ ] K values read from config.
-- [ ] Unit tests for both routes pass.
-
-**Deliverable:** Adaptive routing controller; the core policy is testable in isolation.
-
----
+**Tests:** Unit tests for both SIMPLE and COMPLEX inputs. K values change when config changes.
 
 ### M10.2 — AdaptiveRAG End-to-End Pipeline
 
-**Objective:** Connect all components: preprocessor → router → controller → retriever → conditional compressor → generator.
-
-**Prerequisites:** M10.1, M6.2, M9.3, M3.2.
-
-**Expected files:**
-- `src/pipeline/adaptive_rag.py` (baseline D / full adaptive mode)
-- `scripts/run_pipeline.py` (extend with `--baseline=adaptive`)
-
-**Expected behavior:**
+Extend `src/pipeline/adaptive_rag.py` with `baseline="adaptive"` mode:
 
 ```text
-SIMPLE query:
-    Preprocessor → Router(SIMPLE) → Controller(K=2, compress=false)
-    → Retriever(K=2) → Generator → Answer
+SIMPLE path:  Query → Preprocessor → Router → Controller(K=2, compress=false)
+              → Retriever(K=2) → Generator → Answer
 
-COMPLEX query:
-    Preprocessor → Router(COMPLEX) → Controller(K=10, compress=true)
-    → Retriever(K=10) → Compressor → Generator → Answer
+COMPLEX path: Query → Preprocessor → Router → Controller(K=10, compress=true)
+              → Retriever(K=10) → ContextOptimizer → Generator → Answer
 ```
 
-**Tests / Verification (explicit route verification):**
-- Take a known simple-proxy query from dev fixtures:
-  - Verify router returns SIMPLE.
-  - Verify retrieval_k = K_simple (2).
-  - Verify compression_applied = false.
-  - Verify answer is non-empty.
-- Take a known complex-proxy query from dev fixtures:
-  - Verify router returns COMPLEX.
-  - Verify retrieval_k = K_complex (10).
-  - Verify compression_applied = true.
-  - Verify compressed_tokens < original_tokens.
-  - Verify answer is non-empty.
-- Verify all ExecutionMetadata fields populated for both paths.
+Extend `scripts/run_pipeline.py` with `--baseline=adaptive`.
 
-**Definition of Done:**
-- [ ] Both SIMPLE and COMPLEX routes execute correctly.
+`ExecutionMetadata` must include all fields from the architecture spec:
+`router_latency_ms`, `complexity_label`, `router_confidence`, `retrieval_k`, `compression_applied`, `original_context_tokens`, `compressed_context_tokens`, `compression_ratio`, `compression_latency_ms`, `generation_latency_ms`, `total_latency_ms`.
+
+**Explicit route verification tests (using dev fixtures):**
+- Known simple-proxy query: verify router=SIMPLE, K=2, compression_applied=false, answer non-empty.
+- Known complex-proxy query: verify router=COMPLEX, K=10, compression_applied=true, compressed_tokens < original_tokens, answer non-empty.
+- Router failure simulation: verify fallback route applied, logged, pipeline continues.
+- Compression failure simulation: verify original context preserved, pipeline continues.
+- Empty retrieval result: verify structured failure logged, pipeline does not fabricate evidence.
+
+### M10.3 — CLI Demonstration Trace (Mandatory)
+
+Extend `scripts/run_pipeline.py` to produce a formatted per-query decision trace when `--baseline=adaptive` is invoked. This is a thin wrapper over the existing pipeline — no new pipeline logic is introduced.
+
+Required output format:
+
+```text
+Query:                <user query>
+Predicted Complexity: SIMPLE / COMPLEX
+Retrieval K:          2 / 10
+Compression Applied:  Yes / No
+Original Tokens:      <N>
+Compressed Tokens:    <N>  (if applicable)
+Answer:               <generated answer>
+─────────────────────────────────────
+Router Latency:       <N> ms
+Retrieval Latency:    <N> ms
+Compression Latency:  <N> ms  (if applicable)
+Generation Latency:   <N> ms
+Total Latency:        <N> ms
+```
+
+**Constraint:** Demo output must be populated from `ExecutionMetadata` — it must not introduce separate logic or shadow variables.
+
+**Tests:** Run one simple-proxy and one complex-proxy fixture query through `--baseline=adaptive`; verify all fields are printed and non-null.
+
+**Out of scope for M10:**
+- Full benchmark run (M11).
+- Ablation experiments (M12).
+
+**Acceptance gate:**
+- [ ] Both SIMPLE and COMPLEX routes execute correctly end-to-end.
 - [ ] K selection matches routing decision.
 - [ ] Compression gate matches routing decision.
-- [ ] All metadata fields populated.
+- [ ] All metadata fields populated for both paths.
+- [ ] Router failure and compression failure paths tested.
 - [ ] Integration tests for both routes pass.
+- [ ] CLI demo trace prints all required fields for both SIMPLE and COMPLEX queries.
+- [ ] All tests pass.
 
-**Deliverable:** Baseline D (AdaptiveRAG) functional end-to-end.
-
----
-
-### Checkpoint F — AdaptiveRAG Ready
-
-> **Gate:** M10.2 complete. All four baselines (A, B, C, D) are functional. All pipeline paths are proven. Ready for controlled benchmarking.
+**Deliverable:** Baseline D (AdaptiveRAG) functional end-to-end, with CLI demo trace. All four baselines (A, B, C, D) are now complete. The mandatory functional demonstration of the complete system is done.
 
 ---
 
 ---
 
-# Phase 11 — Experimental Fairness Checkpoint
+# M11 — Primary Benchmark
 
-> **Goal:** Verify that all four baselines run under identical conditions before interpreting any results.
+> **Objective:** Run all four baselines on the full held-out test set under identical conditions. Produce the primary comparative results table. This is the central empirical output of the project.
 
----
+**Prerequisites:** M10 complete. All four baselines functional.
 
-### M11.1 — Fairness Verification
+**Fairness pre-check (must be verified before any results are recorded):**
 
-**Objective:** Run all four baselines on the same held-out test examples and verify identical conditions.
-
-**Prerequisites:** M4.1, M5.1, M7.1, M10.2, M8.5.
-
-**Verification checklist (from `architecture.md §14.2`):**
-
-- [ ] Same query set (identical test split examples for all baselines).
-- [ ] Same dataset split (test, not validation).
-- [ ] Same corpus.
-- [ ] Same chunking parameters.
-- [ ] Same embedding model.
-- [ ] Same vector index.
-- [ ] Same generator model.
+The following must be identical across all baselines:
+- [ ] Same query set (identical `test.jsonl` examples for all four baselines).
+- [ ] Same corpus, chunking parameters, embedding model, vector index.
+- [ ] Same generator model (`HuggingFaceTB/SmolLM-135M-Instruct`).
 - [ ] Same prompt template.
 - [ ] Same generation parameters (temperature, max_new_tokens, seed).
-- [ ] Same hardware.
+- [ ] Same hardware and environment.
 - [ ] Same evaluation scripts.
-- [ ] Validation data was used for any threshold tuning; test data is fresh.
-- [ ] Latency methodology is consistent (cold-cache vs warm-cache documented).
-- [ ] Failures handled consistently across all baselines.
+- [ ] Validation data was used for any threshold/K tuning; test data is fresh.
+- [ ] Latency measurement methodology consistent (document warm vs. cold cache state).
+- [ ] Failures handled consistently (failed examples marked as failed, not skipped).
 
-**Definition of Done:**
-- [ ] All checklist items verified programmatically where possible.
-- [ ] Any discrepancy is fixed before proceeding to primary benchmark.
+**Implementation scope:**
 
-**Deliverable:** Signed-off fairness checklist. Benchmarking can begin.
+Run `scripts/evaluate.py` for each baseline on the full test split (sample limit from config, default: ~500–1,000 per dataset source). Produce:
 
----
-
-### Checkpoint G — Benchmark Ready
-
-> **Gate:** M11.1 complete. Fairness is verified. Results from this point forward are interpretable.
-
----
-
----
-
-# Phase 12 — Primary Benchmark
-
-> **Goal:** Run all four baselines on the full test set and produce comparable results.
-
----
-
-### M12.1 — Full Benchmark Run
-
-**Objective:** Execute all four baselines on the test split (~1,000 PopQA + ~1,000 HotpotQA examples or configured sample_limit).
-
-**Prerequisites:** M11.1.
-
-**Expected files:**
-- `results/baseline_a/` — LLM Only results
-- `results/baseline_b/` — Fixed RAG results
-- `results/baseline_c/` — Always-Compress results
-- `results/baseline_d/` — AdaptiveRAG results
-- `results/summary.csv` — comparative table
-
-**Each result directory must contain:**
 ```text
-config.yaml
-metrics.json
-predictions.jsonl
-latency.csv
-routing.csv (for adaptive baseline)
+results/
+├── baseline_a/    (config.yaml, metrics.json, predictions.jsonl, latency.csv)
+├── baseline_b/    (same structure)
+├── baseline_c/    (same + compression fields)
+├── baseline_d/    (same + routing.csv with per-query: complexity_label, retrieval_k, compression_applied)
+└── summary.csv    (comparative table across all 4 baselines)
 ```
 
-**Expected behavior:**
-- All four baselines run to completion.
-- Per-system: EM, F1, Recall@K (where applicable), router metrics (for AdaptiveRAG), avg/p95 latency, prompt tokens, compression ratio.
+**Per-baseline metrics collected:**
+- Answer quality: EM, Token-level F1
+- Efficiency: mean and p95 router latency (Baseline D only), retrieval latency, compression latency (Baselines C, D), generation latency, total latency
+- Token statistics: retrieved context tokens, compressed context tokens (Baselines C, D), final prompt tokens, compression ratio (Baselines C, D)
+- Router quality (Baseline D only): accuracy, precision, recall, F1, confusion matrix (from M9.3, applied to test routing decisions)
 
-**Definition of Done:**
-- [ ] All four baselines produce result artifacts.
-- [ ] No baseline uses validation data.
+**Acceptance gate:**
+- [ ] All four baselines produce result artifacts without error.
+- [ ] No baseline uses validation or training data.
+- [ ] All result files are machine-readable (JSON/JSONL/CSV).
+- [ ] Experiment configuration recorded alongside results (git commit hash, model identifiers, dataset split, sample count, hardware, random seed).
+- [ ] Summary comparison table generated.
+- [ ] Fairness pre-check passed.
+
+**Deliverable:** Primary benchmark results. First complete comparative numbers for all research questions.
+
+> **Note on sample size:** The default `sample_limit: 1000` in config covers the evaluation set. Final size should be whatever fits compute constraints while producing statistically distinguishable results — document the actual count used.
+
+---
+
+---
+
+# M12 — Ablation + Error Analysis
+
+> **Objective:** Run the primary compression ablation to isolate the value of compression, and inspect a representative set of failure cases to support honest research interpretation.
+
+**Prerequisites:** M11 complete (primary benchmark results available).
+
+**Implementation scope:**
+
+### M12.1 — Ablation A: Compression Value
+
+**This ablation is mandatory.** It isolates the contribution of compression from retrieval depth.
+
+| Condition | Retrieval K | Compression | Purpose |
+|---|---|---|---|
+| A1 | 10 | No compression | K=10 uncompressed |
+| A2 | 10 | Compression | K=10 compressed (= Baseline C) |
+
+A2 is already Baseline C — no additional pipeline work needed, just correct configuration. A1 requires running the pipeline with K=10 and `compression_enabled=false`.
+
+Results to `results/ablation_compression/`. Compute difference in EM, F1, token usage, and latency between A1 and A2.
+
+This directly answers RQ3 (selective compression) and RQ4 (compression economics).
+
+### M12.2 — Error Analysis (Representative)
+
+Inspect representative failure examples from the M11 benchmark results. This is a lightweight analysis workflow — no dedicated tooling is required beyond the existing `predictions.jsonl` output.
+
+For each of the following categories, identify and log at least 3–5 representative examples from the test results:
+
+| Category | What to Inspect |
+|---|---|
+| Router mistakes (false SIMPLE) | Complex query routed SIMPLE → was K=2 insufficient? |
+| Router mistakes (false COMPLEX) | Simple query routed COMPLEX → unnecessary overhead |
+| Retrieval failures | Answer wrong despite routing being correct — evidence not retrieved |
+| Compression information loss | Answer correct without compression, wrong after compression |
+| Generator failures | Evidence present, answer still wrong |
+| Cases where AdaptiveRAG helps | Examples where Baseline D clearly outperforms Baseline B |
+| Cases where AdaptiveRAG offers no advantage | Examples where Baseline B matches or beats Baseline D |
+
+Document findings in `results/error_analysis/findings.md`. Patterns should be referenced in the research write-up.
+
+### M12.3 — Reproducibility Metadata
+
+Record and verify reproducibility metadata for at least one baseline (Fixed RAG recommended):
+
+1. Confirm `requirements.txt` has pinned versions.
+2. Confirm model identifiers are stored in every `results/<baseline>/config.yaml`.
+3. Confirm dataset splits are version-controlled (or their construction is deterministic and seeded).
+4. Confirm random seed is recorded (`seed: 42` in config).
+5. Confirm hardware information is logged in experiment output.
+6. Confirm git commit hash is captured in result metadata.
+
+A full clean-environment rerun is **not required** if all of the above are verifiable. The goal is an auditable record, not a redundant execution.
+
+**Ablation B (optional):** Adaptive K vs Fixed K (K=2/10 routing vs fixed K=5, no compression). Implement only if time remains after M12.1 and M12.2 are complete.
+
+**Out of scope for M12:**
+- Optional heuristic router comparison.
+- Additional parameter sweeps.
+- Semantic similarity or RAGAS-style evaluation (remain optional post-MVP).
+- MRR, nDCG (remain deferred).
+
+**Acceptance gate:**
+- [ ] Ablation A results saved with correct configuration metadata.
+- [ ] Error analysis findings documented for all 7 categories.
+- [ ] Reproducibility metadata verified for Fixed RAG baseline.
 - [ ] Results are machine-readable.
-- [ ] Experiment config recorded alongside results.
-- [ ] Summary table generated.
 
-**Deliverable:** Primary benchmark results. First comparative numbers available.
+**Deliverable:** Ablation results + representative error analysis. The project now has all empirical content needed for honest research interpretation.
 
 ---
 
 ---
 
-# Phase 13 — Ablations
+# MVP Hard Stop ✋
 
-> **Goal:** Run the required ablation studies to isolate the contribution of individual components.
+**The MVP is complete when ALL of the following are true.**
 
----
+After this point: stop adding features. The next stage is analysis, writing, tables, plots, and presentation — not new engineering.
 
-### M13.1 — Ablation A: Compression Value
-
-**Objective:** Isolate the effect of compression by holding K constant.
-
-**Prerequisite:** M12.1.
-
-**Experiment design:**
-
-| Condition | Retrieval K | Compression |
-|---|---|---|
-| A1 | 10 | No compression |
-| A2 | 10 | Compression |
-
-This directly isolates whether compression helps or hurts when retrieval depth is identical.
-
-**Definition of Done:**
-- [ ] Both conditions run on the same test examples.
-- [ ] Results saved as `results/ablation_compression/`.
-- [ ] Difference in EM, F1, tokens, latency computed.
-
----
-
-### M13.2 — Ablation B: Adaptive K Value
-
-**Objective:** Isolate the effect of adaptive retrieval depth vs fixed retrieval depth.
-
-**Experiment design:**
-
-| Condition | Retrieval K |
-|---|---|
-| B1 | Fixed K=5 (no routing) |
-| B2 | Adaptive K (K=2 or K=10 via router) |
-
-No compression in either condition, to isolate K effect.
-
-**Definition of Done:**
-- [ ] Both conditions run on the same test examples.
-- [ ] Results saved as `results/ablation_adaptive_k/`.
-- [ ] Difference in EM, F1, latency computed.
-
----
-
-### M13.3 — Optional Ablation C: Router Strategy
-
-**Objective:** Compare learned router vs a simple heuristic router (e.g., query length threshold).
-
-**Note:** This is optional. Only implement if bandwidth allows.
-
-**Definition of Done (if pursued):**
-- [ ] Heuristic router implemented.
-- [ ] Same test examples used.
-- [ ] Results compared.
-
-**Deliverable:** Ablation results quantifying the contribution of compression and adaptive K independently.
-
----
-
----
-
-# Phase 14 — Error Analysis
-
-> **Goal:** Understand when and why the system fails, not just aggregate metrics.
-
----
-
-### M14.1 — Error Analysis Suite
-
-**Objective:** Inspect representative failure examples across all failure categories.
-
-**Prerequisites:** M12.1.
-
-**Failure categories (from `prod-spec.md`):**
-
-| Category | Examples to Inspect |
-|---|---|
-| Routing failures (false SIMPLE) | Complex query routed as SIMPLE → low K insufficient |
-| Routing failures (false COMPLEX) | Simple query routed as COMPLEX → unnecessary overhead |
-| Retrieval failures | Required evidence not retrieved |
-| Compression failures | Evidence present before compression, absent after |
-| Generation failures | Evidence retrieved but answer still wrong |
-| Efficiency failures | Compression saved tokens but increased total latency |
-| Adaptation helps | Examples where AdaptiveRAG clearly outperforms Fixed RAG |
-| Adaptation hurts | Examples where AdaptiveRAG underperforms Fixed RAG |
-
-**For each category:**
-- Identify ≥5 representative examples.
-- Log query, routing decision, retrieved chunks, (compressed) context, generated answer, reference answer, failure reason.
-
-**Definition of Done:**
-- [ ] All 8 failure categories have at least 5 examples inspected.
-- [ ] Findings documented in `results/error_analysis/`.
-- [ ] Patterns (if any) recorded for research interpretation.
-
-**Deliverable:** Error analysis report enabling honest research interpretation.
-
----
-
----
-
-# Phase 15 — Reproducibility Checkpoint
-
-> **Goal:** Verify that experiments can be rerun from configuration alone and produce equivalent results.
-
----
-
-### M15.1 — Reproducibility Verification
-
-**Objective:** Run at least one baseline from scratch in a clean environment and verify results match.
-
-**Prerequisites:** M12.1.
-
-**Verification steps:**
-
-1. Fresh virtual environment.
-2. Install from `requirements.txt` (pinned versions).
-3. Download models using config identifiers.
-4. Rebuild index using `scripts/build_index.py`.
-5. Run Fixed RAG benchmark using same config.
-6. Compare EM and F1 against original run.
-
-**Definition of Done:**
-- [ ] Results match within expected floating-point tolerance.
-- [ ] Model identifiers recorded in experiment metadata.
-- [ ] Dataset splits versioned and recorded.
-- [ ] Random seeds recorded.
-- [ ] Hardware recorded in experiment metadata.
-- [ ] `git commit` hash captured (or equivalent).
-
-**Deliverable:** Reproducibility verified; experiment is auditable.
-
----
-
----
-
-# Phase 16 — MVP Hard Stop ✋
-
-### MVP Acceptance Criteria Checklist
-
-The MVP is complete when **ALL** of the following are true:
-
-**Core Pipeline:**
-- [ ] Query input works.
+### Core Pipeline
 - [ ] Query preprocessing works.
-- [ ] Complexity router works (trained and evaluated).
-- [ ] SIMPLE and COMPLEX routes work.
+- [ ] Complexity router works (trained and evaluated independently).
+- [ ] SIMPLE and COMPLEX routes execute correctly.
 - [ ] Retrieval K changes according to route.
 - [ ] SIMPLE route bypasses compression.
 - [ ] COMPLEX route invokes compression.
-- [ ] Fixed generator produces answers.
+- [ ] Compression failure fallback works.
+- [ ] Fixed generator produces answers on all routes.
 
-**Baselines:**
-- [ ] Baseline A (LLM Only) works.
-- [ ] Baseline B (Fixed RAG) works.
-- [ ] Baseline C (Always-Compress) works.
-- [ ] Baseline D (AdaptiveRAG) works.
+### Baselines
+- [ ] Baseline A (LLM Only) produces results.
+- [ ] Baseline B (Fixed RAG) produces results.
+- [ ] Baseline C (Always-Compress RAG) produces results.
+- [ ] Baseline D (AdaptiveRAG) produces results.
 
-**Evaluation:**
-- [ ] Same evaluation set used across all baselines.
-- [ ] EM and F1 measured.
-- [ ] Retrieval quality measured where applicable.
-- [ ] Router metrics measured.
-- [ ] Prompt/context tokens measured.
+### Evaluation
+- [ ] Same test set used across all four baselines.
+- [ ] EM and token-level F1 measured.
+- [ ] Router quality measured (accuracy, precision, recall, F1, confusion matrix).
+- [ ] Stage-level latency measured for all stages.
+- [ ] Token statistics measured (retrieved, compressed, final prompt).
 - [ ] Compression ratio measured.
-- [ ] End-to-end latency measured.
-- [ ] Stage-level latency measured.
+- [ ] Results are machine-readable with full experiment metadata.
 
-**Research:**
-- [ ] At least one meaningful ablation complete (Ablation A).
-- [ ] Router errors can be inspected.
-- [ ] Compression errors can be inspected.
-- [ ] Representative failure cases analyzed.
-- [ ] Results are comparable across baselines.
+### Research
+- [ ] Ablation A (compression value) complete.
+- [ ] Representative failure cases analyzed (7 categories, ≥3–5 examples each).
+- [ ] Results support honest interpretation of whether AdaptiveRAG helps or hurts.
 
-**Engineering:**
+### Engineering
 - [ ] Core logic has tests.
 - [ ] Configuration is externalized.
-- [ ] Experiments produce machine-readable artifacts.
-- [ ] Model/dataset/config are recorded per experiment.
-- [ ] At least one experiment is reproducible from config.
+- [ ] Reproducibility metadata recorded.
+- [ ] Git commit hash captured in at least one result artifact.
+- [ ] CLI demo trace functional (implemented in M10.3; verified for SIMPLE and COMPLEX paths).
+
+> **Once this checklist is complete: STOP adding features.**
+> Do not add GraphRAG, agents, multimodal RAG, web search, dynamic chunking, generator fine-tuning, complex UI, distributed infrastructure, or any capability not directly required by the research question.
+>
+> The remaining work after this point is: analysis, plots/tables, report sections, writing.
 
 ---
 
-> **Once this checklist is complete: STOP adding features.**  
-> Do not add GraphRAG, agents, multimodal RAG, web search, dynamic chunking, generator fine-tuning, complex UI, or distributed infrastructure.  
-> The next stage is research interpretation, documentation, and writing — not new features.
-
 ---
 
----
+# Post-MVP: Research Packaging (After MVP Stop)
 
-# Phase 17 — Final Integration Validation
+> Only after the MVP checklist is complete. These are not implementation milestones — they are documentation, presentation, and communication tasks.
 
-> **Goal:** Complete end-to-end system verification before research packaging.
+**CLI Demo:** Completed in M10.3 as part of the mandatory AdaptiveRAG milestone. No additional demo work is required post-MVP.
 
----
+**Result tables and plots:** Generate comparison tables (summary.csv already produced in M11) and any visualizations from `notebooks/` using existing result artifacts.
 
-### M17.1 — Final System Verification
+**Report support:** The deliverables from each milestone map directly to report sections:
 
-**Objective:** Run a complete end-to-end test of the full AdaptiveRAG pipeline covering all paths, failure modes, and edge cases.
-
-**Prerequisites:** M16 checklist complete.
-
-**Test cases to run:**
-
-| Test Case | Expected Outcome |
+| Report Section | Source |
 |---|---|
-| Simple-proxy query, SIMPLE route | K=2, compression=false, answer non-empty |
-| Complex-proxy query, COMPLEX route | K=10, compression=true, compressed_tokens < original |
-| Router failure simulation | Fallback route applied, logged, pipeline continues |
-| Empty retrieval result simulation | Structured failure, logged, no fabricated evidence |
-| Compression failure simulation | Original context preserved, failure logged, pipeline continues |
-| Invalid query | Rejected with structured error at preprocessor |
-
-**Definition of Done:**
-- [ ] All test cases pass.
-- [ ] All metadata fields populated.
-- [ ] All failure paths handled correctly.
-- [ ] Result artifacts produced.
-
-**Deliverable:** Fully verified end-to-end system.
+| Proposed Methodology | Architecture + this plan |
+| Dataset and Preprocessing | M1.x implementation + data documentation |
+| Implementation | src/ code + pipeline description |
+| Experimentation and Results | M11 benchmark results + M12 ablation + error analysis |
+| Functional Demonstration | CLI demo trace from M10.3 |
+| GitHub Repository | Complete repository with pinned dependencies |
 
 ---
 
 ---
 
-# Phase 18 — Demo (Optional, Post-MVP)
-
-> Only after the research pipeline is stable and the MVP checklist is complete.
-
----
-
-### M18.1 — Lightweight Interactive Demo
-
-**Objective:** Simple script or minimal interface that accepts a query and shows the pipeline decision trace.
-
-**Prerequisites:** M16 MVP complete.
-
-**Expected output for a given query:**
+## Summary: Remaining Phase Sequence
 
 ```text
-Query:               <user query>
-Predicted Complexity: SIMPLE / COMPLEX
-Retrieval K:         2 / 10
-Compression Applied: Yes / No
-Original Tokens:     <N>
-Compressed Tokens:   <N> (if applicable)
-Answer:              <generated answer>
-Router Latency:      <N> ms
-Retrieval Latency:   <N> ms
-Compression Latency: <N> ms (if applicable)
-Generation Latency:  <N> ms
-Total Latency:       <N> ms
-```
-
-**Constraint:** Demo must NOT delay or block the research pipeline. It is a thin wrapper over the existing pipeline.
-
-**Definition of Done:**
-- [ ] Demo runs from CLI.
-- [ ] Output includes all fields above.
-- [ ] No new pipeline logic introduced.
-
-**Deliverable:** A simple CLI demo for presentations or paper figures.
-
----
-
-### Checkpoint I — Final Research Package Ready
-
-> **Gate:** M17.1 complete (and optionally M18.1). All results are available, reproducible, and ready for research interpretation and writing.
-
----
-
----
-
-## Summary: Development Sequence
-
-```text
-Phase 0:  Foundation (repo, config, logging, fixtures)
-          ↓
-Phase 1:  Data pipeline + vector index
-          ↓
-Phase 2:  Generator interface
-          ↓
-Phase 3:  ⭐ First Vertical Slice (query → retrieve → generate)
-          ↓
-Phase 4:  Baseline A (LLM Only)
-          ↓
-Phase 5:  Baseline B (Fixed RAG)
-          ↓ (parallel: Phase 8 — Evaluation Infrastructure)
-Phase 6:  Context Compression (LLMLingua)
-          ↓
-Phase 7:  Baseline C (Always-Compress RAG)
-          ↓
-Phase 8:  Evaluation Infrastructure (metrics, benchmark runner)
-          ↓
-Phase 9:  Complexity Router (data prep → train → evaluate)
-          ↓
-Phase 10: Adaptive Controller + AdaptiveRAG
-          ↓
-Phase 11: Experimental Fairness Checkpoint
-          ↓
-Phase 12: Primary Benchmark (all 4 baselines, test set)
-          ↓
-Phase 13: Ablations
-          ↓
-Phase 14: Error Analysis
-          ↓
-Phase 15: Reproducibility Checkpoint
-          ↓
-Phase 16: ✋ MVP Hard Stop
-          ↓
-Phase 17: Final Integration Validation
-          ↓
-Phase 18: Demo (optional)
+M7:  Evaluation Infrastructure (metrics + benchmark runner)
+     ↓
+M8:  Compression Fallback + Baseline C (Always-Compress RAG)
+     ↓
+M9:  Complexity Router (data prep → train → evaluate)
+     ↓
+M10: Adaptive Controller + Baseline D (AdaptiveRAG) + CLI Demo [mandatory]
+     ↓
+M11: Primary Benchmark (all 4 baselines on identical test conditions)
+     ↓
+M12: Ablation + Error Analysis + Reproducibility Metadata
+     ↓
+     MVP STOP ✋
+     ↓
+     Post-MVP: Report + Plots + Writing
 ```
 
 ---
 
-## ADR Dependency Summary
+## ADR Status
 
-| Decision | Milestone Blocked | Status |
+| Decision | Status | Resolution |
 |---|---|---|
-| **ADR-001** Generator model | M2.1 | Open — must confirm before Phase 2 |
-| **ADR-002** Router model | M9.1 | Open — must confirm before Phase 9 |
-| **ADR-003** Embedding model | M1.4 | Open — must confirm before Phase 1 |
-| **ADR-004** Vector store | M1.5 | Open — must confirm before Phase 1 |
-| **ADR-005** K values | M0.2, M10.1 | Use defaults; validate on val set |
-| **ADR-006** Compression budget | M6.1 | Use initial default; validate on val set |
-| **ADR-007** Router threshold | M9.4 | Determine after router validation |
-| **ADR-008** External inference | M2.1 | Only if local generation infeasible |
+| **ADR-001** Generator model | ✅ Resolved | `HuggingFaceTB/SmolLM-135M-Instruct` |
+| **ADR-002** Router model | 🔲 Open | Direction: `microsoft/deberta-v3-small`; must confirm at M9.1 |
+| **ADR-003** Embedding model | ✅ Resolved | `BAAI/bge-small-en-v1.5` |
+| **ADR-004** Vector store | ✅ Resolved | ChromaDB |
+| **ADR-005** K values | 🔲 Open (defaults set) | K_simple=2, K_complex=10, K_baseline=5; validate at M9.3 |
+| **ADR-006** Compression budget | ✅ Resolved (initial) | 0.5; validated at M12 ablation |
+| **ADR-007** Router confidence threshold | 🔲 Open | Determine after M9.3 router evaluation |
+| **ADR-008** External inference fallback | ✅ Not needed | Local SmolLM confirmed feasible on CPU |
 
 ---
 
 ## Risks and Mitigations
 
-| Risk | Phase | Detection | Mitigation |
+| Risk | Milestone | Detection | Mitigation |
 |---|---|---|---|
-| Generator OOM | 2 | M2.1 load test | Quantize model; switch to lighter alternative (ADR-001) |
-| Embedding model OOM | 1 | M1.4 load test | Switch to lighter embedding model (ADR-003) |
-| ChromaDB indexing slow | 1 | M1.5 time log | Evaluate FAISS (ADR-004) |
-| Compressor incompatible | 6 | M6.1 integration test | Check LLMLingua version; pin dependency |
-| Router learns dataset identity | 9 | M9.4 error analysis | Mix datasets in training; inspect error distribution |
-| Test leakage | 1 | M1.2 leakage check | Enforce split separation; check in M9.1 |
-| Latency inconsistency | 12 | M11.1 fairness check | Document cache state; run under same conditions |
-| Compression degrades quality | 13 | M13.1 ablation | Report result honestly; discuss in error analysis |
-| Generator quality insufficient | 12 | M12.1 results review | Consider alternative generator (ADR-001 update) |
+| Router OOM during training | M9.2 | Training script error | Reduce batch size; try lighter encoder (update ADR-002) |
+| Router learns dataset identity | M9.3 | Error distribution analysis | Mix datasets in training; inspect false-classification examples |
+| Test leakage into router training | M9.1 | Leakage check script | Enforce split separation at data preparation time |
+| Compression degrades answer quality | M12 | Ablation A results | Report result honestly; analyze in error analysis |
+| SmolLM generates poor quality answers | M11 | Benchmark EM/F1 results | Report result honestly; discuss as limitation |
+| Latency inconsistency across baselines | M11 | Fairness pre-check | Document cache state; run under identical conditions |
