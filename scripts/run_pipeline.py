@@ -12,8 +12,8 @@ from src.pipeline.adaptive_rag import Pipeline
 def main():
     parser = argparse.ArgumentParser(description="Run the minimal AdaptiveRAG pipeline.")
     parser.add_argument("--query", type=str, help="The query to answer.")
-    parser.add_argument("--baseline", type=str, choices=["default", "llm_only"], default="default",
-                        help="Select the baseline to run. Use 'llm_only' for no-retrieval.")
+    parser.add_argument("--baseline", type=str, choices=["fixed_rag", "llm_only"], default="fixed_rag",
+                        help="Select the baseline to run. Use 'fixed_rag' for Baseline B or 'llm_only' for Baseline A.")
     parser.add_argument("--fixtures", action="store_true", help="Run the 5 development fixture queries and save results.")
     args = parser.parse_args()
     
@@ -53,7 +53,11 @@ def main():
         # Take first 5 dev fixture queries
         queries_data = queries_data[:5]
         
-        results_dir = "results/baseline_a"
+        if args.baseline == "llm_only":
+            results_dir = "results/baseline_a"
+        else:
+            results_dir = "results/baseline_b"
+            
         os.makedirs(results_dir, exist_ok=True)
         results_file = os.path.join(results_dir, "results.jsonl")
         
@@ -69,6 +73,7 @@ def main():
                     "answer": result.answer,
                     "baseline": args.baseline,
                     "retrieval_k": result.execution_metadata.retrieval_k,
+                    "retrieved_chunks": result.execution_metadata.retrieved_chunks,
                     "generation_latency_ms": result.execution_metadata.generation_latency_ms,
                     "total_latency_ms": result.execution_metadata.total_latency_ms,
                     "metadata": {

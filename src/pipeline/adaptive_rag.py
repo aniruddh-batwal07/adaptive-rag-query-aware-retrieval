@@ -18,6 +18,7 @@ class ExecutionMetadata:
     generation_latency_ms: float
     total_latency_ms: float
     original_query: str
+    retrieved_chunks: List[Dict[str, Any]]
 
 @dataclass
 class PipelineResult:
@@ -25,7 +26,7 @@ class PipelineResult:
     execution_metadata: ExecutionMetadata
 
 class Pipeline:
-    def __init__(self, config: Config, retriever: Retriever = None, generator: ResponseGenerator = None, baseline: str = "default"):
+    def __init__(self, config: Config, retriever: Retriever = None, generator: ResponseGenerator = None, baseline: str = "fixed_rag"):
         """
         Initializes the pipeline with required components.
         If retriever or generator are not provided, they are instantiated based on config.
@@ -54,6 +55,7 @@ class Pipeline:
             retrieval_latency_ms = None
             retrieval_k = 0
             context = ""
+            retrieved_chunks = []
         else:
             # 2. Retrieval
             retrieval_start = time.time()
@@ -77,7 +79,8 @@ class Pipeline:
             retrieval_latency_ms=retrieval_latency_ms,
             generation_latency_ms=generated_answer.generation_latency_ms,
             total_latency_ms=total_latency_ms,
-            original_query=preprocessed.original_query
+            original_query=preprocessed.original_query,
+            retrieved_chunks=retrieved_chunks
         )
         
         return PipelineResult(
