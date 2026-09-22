@@ -12,75 +12,101 @@ from src.pipeline.adaptive_rag import Pipeline
 def main():
     parser = argparse.ArgumentParser(description="Run the minimal AdaptiveRAG pipeline.")
     parser.add_argument("--query", type=str, help="The query to answer.")
-    parser.add_argument("--baseline", type=str, choices=["fixed_rag", "llm_only", "always_compress"], default="fixed_rag",
-                        help="Select the baseline to run. Use 'fixed_rag' for Baseline B, 'llm_only' for Baseline A, or 'always_compress' for Baseline C.")
+    parser.add_argument("--baseline", type=str, choices=["fixed_rag", "llm_only", "always_compress", "adaptive"], default="fixed_rag",
+                        help="Select the baseline to run. Use 'fixed_rag' for Baseline B, 'llm_only' for Baseline A, 'always_compress' for Baseline C, or 'adaptive' for Baseline D.")
     parser.add_argument("--fixtures", action="store_true", help="Run the 5 development fixture queries and save results.")
     args = parser.parse_args()
-    
+
     if not args.query and not args.fixtures:
         parser.error("Must provide either --query or --fixtures")
-    
+
     print("Loading config...")
     config = load_config("configs/config.yaml")
-    
+
     print(f"Initializing pipeline with baseline='{args.baseline}'...")
     pipeline = Pipeline(config, baseline=args.baseline)
-    
+
     if args.query:
         print(f"\nRunning query: '{args.query}'\n")
         result = pipeline.run(args.query)
-        
-        print("================ ANSWER ================")
-        print(result.answer)
-        print("========================================")
-        print("METADATA:")
-        print(f"  Query                : {result.execution_metadata.query}")
-        print(f"  Retrieval K          : {result.execution_metadata.retrieval_k}")
-        lat = result.execution_metadata.retrieval_latency_ms
-        if lat is not None:
-            print(f"  Retrieval Latency    : {lat:.2f} ms")
+
+        if args.baseline == "adaptive":
+            print("================ ADAPTIVE DEMO TRACE ================")
+            print(f"Query:                {result.execution_metadata.query}")
+            print(f"Predicted Complexity: {result.execution_metadata.complexity_label}")
+            conf = result.execution_metadata.router_confidence
+            print(f"Router Confidence:    {conf:.2f}" if conf is not None else "Router Confidence:    N/A")
+            print(f"Retrieval K:          {result.execution_metadata.retrieval_k}")
+            print(f"Compression Applied:  {'Yes' if result.execution_metadata.compression_applied else 'No'}")
+            if result.execution_metadata.compression_applied:
+                print(f"Original Tokens:      {result.execution_metadata.original_context_tokens}")
+                print(f"Compressed Tokens:    {result.execution_metadata.compressed_context_tokens}")
+            print(f"Answer:               {result.answer}")
+            print("-------------------------------------")
+            r_lat = result.execution_metadata.router_latency_ms
+            print(f"Router Latency:       {r_lat:.2f} ms" if r_lat is not None else "Router Latency:       N/A")
+            lat = result.execution_metadata.retrieval_latency_ms
+            print(f"Retrieval Latency:    {lat:.2f} ms" if lat is not None else "Retrieval Latency:    N/A")
+            if result.execution_metadata.compression_applied:
+                c_lat = result.execution_metadata.compression_latency_ms
+                print(f"Compression Latency:  {c_lat:.2f} ms" if c_lat is not None else "Compression Latency:  N/A")
+            print(f"Generation Latency:   {result.execution_metadata.generation_latency_ms:.2f} ms")
+            print(f"Total Latency:        {result.execution_metadata.total_latency_ms:.2f} ms")
+            if result.execution_metadata.error_status:
+                print(f"Error Status:         {result.execution_metadata.error_status}")
+            print("=====================================================")
         else:
-            print(f"  Retrieval Latency    : N/A")
+            print("================ ANSWER ================")
+            print(result.answer)
+            print("========================================")
+            print("METADATA:")
+            print(f"  Query                : {result.execution_metadata.query}")
+            print(f"  Retrieval K          : {result.execution_metadata.retrieval_k}")
+            lat = result.execution_metadata.retrieval_latency_ms
+            if lat is not None:
+                print(f"  Retrieval Latency    : {lat:.2f} ms")
+            else:
+                print(f"  Retrieval Latency    : N/A")
 
-        print(f"  Compression Applied  : {result.execution_metadata.compression_applied}")
-        if result.execution_metadata.compression_applied:
-            print(f"  Original Tokens      : {result.execution_metadata.original_context_tokens}")
-            print(f"  Compressed Tokens    : {result.execution_metadata.compressed_context_tokens}")
-            c_lat = result.execution_metadata.compression_latency_ms
-            if c_lat is not None:
-                print(f"  Compression Latency  : {c_lat:.2f} ms")
+            print(f"  Compression Applied  : {result.execution_metadata.compression_applied}")
+            if result.execution_metadata.compression_applied:
+                print(f"  Original Tokens      : {result.execution_metadata.original_context_tokens}")
+                print(f"  Compressed Tokens    : {result.execution_metadata.compressed_context_tokens}")
+                c_lat = result.execution_metadata.compression_latency_ms
+                if c_lat is not None:
+                    print(f"  Compression Latency  : {c_lat:.2f} ms")
 
-        print(f"  Generation Latency   : {result.execution_metadata.generation_latency_ms:.2f} ms")
-        print(f"  Total Latency        : {result.execution_metadata.total_latency_ms:.2f} ms")
-        if result.execution_metadata.error_status:
-            print(f"  Error Status         : {result.execution_metadata.error_status}")
+            print(f"  Generation Latency   : {result.execution_metadata.generation_latency_ms:.2f} ms")
+            print(f"  Total Latency        : {result.execution_metadata.total_latency_ms:.2f} ms")
+            if result.execution_metadata.error_status:
+                print(f"  Error Status         : {result.execution_metadata.error_status}")
 
     if args.fixtures:
         print("\nRunning fixtures...")
         fixtures_path = "datasets/fixtures/simple_queries.json"
         with open(fixtures_path, 'r', encoding='utf-8') as f:
             queries_data = json.load(f)
-        
+
         # Take first 5 dev fixture queries
         queries_data = queries_data[:5]
-        
+
         if args.baseline == "llm_only":
             results_dir = "results/baseline_a"
         elif args.baseline == "always_compress":
             results_dir = "results/baseline_c"
         else:
             results_dir = "results/baseline_b"
-            
+
         os.makedirs(results_dir, exist_ok=True)
         results_file = os.path.join(results_dir, "results.jsonl")
-        
+
         print(f"Saving results to {results_file}")
         with open(results_file, 'w', encoding='utf-8') as out_f:
             for item in queries_data:
                 q = item["query"]
                 print(f"Processing: {q}")
                 result = pipeline.run(q)
-                
+
                 res_dict = {
                     "query": result.execution_metadata.original_query,
                     "answer": result.answer,
