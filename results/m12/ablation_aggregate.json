@@ -1,0 +1,29 @@
+{
+  "WITHOUT_COMPRESSION": {
+    "em": 0.0,
+    "token_f1": 0.00472753696702081,
+    "average_retrieved_context_tokens": NaN,
+    "average_compressed_context_tokens": NaN,
+    "average_retrieval_latency": 1747.7405786514282,
+    "average_compression_latency": NaN,
+    "average_generation_latency": 77078.65352630615,
+    "average_total_latency": 78838.07916641235
+  },
+  "WITH_COMPRESSION": {
+    "em": 0.0,
+    "token_f1": 0.003508771929824561,
+    "average_retrieved_context_tokens": 1233.9,
+    "average_compressed_context_tokens": 598.9,
+    "average_retrieval_latency": 878.2907247543335,
+    "average_compression_latency": 13488.348484039307,
+    "average_generation_latency": 55659.83760356903,
+    "average_total_latency": 70031.59651756287
+  },
+  "DIFFERENCES": {
+    "token_reduction": 635.0000000000001,
+    "percentage_token_reduction": 51.46284139719589,
+    "compression_overhead": 13488.348484039307,
+    "generation_latency_difference": 21418.81592273712,
+    "total_latency_difference": 8806.482648849487
+  }
+}

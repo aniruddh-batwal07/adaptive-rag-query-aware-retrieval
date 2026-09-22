@@ -1,0 +1,18 @@
+{
+  "em": 0.0,
+  "f1": 0.005768280930492966,
+  "latency": {
+    "retrieval_mean_ms": 805.2493810653687,
+    "generation_mean_ms": 17661.4248752594,
+    "total_mean_ms": 18471.81124687195,
+    "compression_mean_ms": null,
+    "router_mean_ms": null
+  },
+  "tokens": {
+    "original_mean": null,
+    "compressed_mean": null
+  },
+  "retrieval": {
+    "recall_mean": null
+  }
+}

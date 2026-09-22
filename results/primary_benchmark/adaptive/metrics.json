@@ -1,0 +1,40 @@
+{
+  "em": 0.0,
+  "f1": 0.0032,
+  "latency": {
+    "retrieval_mean_ms": 27.60186195373535,
+    "generation_mean_ms": 15679.445171356201,
+    "total_mean_ms": 16513.87150287628,
+    "compression_mean_ms": 1568.482780456543,
+    "router_mean_ms": 19.6505069732666
+  },
+  "tokens": {
+    "original_mean": 1244.6,
+    "compressed_mean": 605.0
+  },
+  "retrieval": {
+    "recall_mean": null
+  },
+  "router": {
+    "accuracy": 1.0,
+    "precision": {
+      "COMPLEX": 1.0,
+      "SIMPLE": 1.0
+    },
+    "recall": {
+      "COMPLEX": 1.0,
+      "SIMPLE": 1.0
+    },
+    "f1": {
+      "COMPLEX": 1.0,
+      "SIMPLE": 1.0,
+      "macro": 1.0
+    },
+    "confusion_matrix": {
+      "TP_COMPLEX": 5,
+      "FP_COMPLEX": 0,
+      "FN_COMPLEX": 0,
+      "TN_COMPLEX": 5
+    }
+  }
+}

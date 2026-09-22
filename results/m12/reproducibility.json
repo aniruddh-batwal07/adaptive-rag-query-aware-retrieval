@@ -1,0 +1,25 @@
+{
+  "experiment_name": "M12_Compression_Ablation",
+  "dataset_split": "datasets/splits/test_mini_10.jsonl",
+  "sample_count": 10,
+  "random_seed": 42,
+  "models": {
+    "generator": "HuggingFaceTB/SmolLM-135M-Instruct",
+    "retriever_embeddings": "BAAI/bge-small-en-v1.5",
+    "compressor": "microsoft/llmlingua-2-bert-base-multilingual-cased-meetingbank",
+    "router": "distilbert-base-uncased"
+  },
+  "retrieval_k": {
+    "condition_a_without_compression": 10,
+    "condition_b_with_compression": 10
+  },
+  "compression_parameters": {
+    "budget": 0.5
+  },
+  "generation_parameters": {
+    "temperature": 0.1,
+    "max_new_tokens": 256
+  },
+  "benchmark_git_commit": "c4ab55e0d0b96791ff06ce1f346610aa1fc2e5bc",
+  "software_environment": "Python 3.14.5, PyTorch, HuggingFace Transformers, ChromaDB"
+}

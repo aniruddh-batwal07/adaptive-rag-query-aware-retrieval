@@ -1,10 +1,5 @@
 import sys
 from unittest.mock import MagicMock
-sys.modules["src.generator.response_generator"] = MagicMock()
-mock_qc = MagicMock()
-mock_qc.QueryClassifier = MagicMock()
-sys.modules["src.router.query_classifier"] = mock_qc
-sys.modules["src.optimizer.context_optimizer"] = MagicMock()
 
 import pytest
 import time

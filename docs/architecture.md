@@ -172,10 +172,10 @@ The architecture intentionally has no microservices, message queues, or external
 | Property | Value |
 |---|---|
 | **File** | `src/router/query_classifier.py` |
-| **Status** | 🔲 Not yet implemented |
+| **Status** | ✅ Implemented |
 | **Input** | Normalized query string |
 | **Output** | `ComplexityResult { label: SIMPLE\|COMPLEX, confidence: float, latency_ms: float }` |
-| **Model direction** | `microsoft/deberta-v3-small` (ADR-002, open) |
+| **Model** | `distilbert-base-uncased` (ADR-002, resolved) |
 | **Deterministic** | Yes (given fixed weights and seed) |
 
 **Architectural requirements:**
@@ -194,7 +194,7 @@ The architecture intentionally has no microservices, message queues, or external
 | Property | Value |
 |---|---|
 | **File** | `src/router/routing_logic.py` |
-| **Status** | 🔲 Not yet implemented |
+| **Status** | ✅ Implemented |
 | **Input** | `ComplexityResult` |
 | **Output** | `RoutingDecision { complexity, retrieval_k, compression_enabled }` |
 | **Deterministic** | Yes — pure policy mapping |
@@ -256,7 +256,7 @@ The retriever does NOT decide whether to compress — that decision belongs to t
 | Property | Value |
 |---|---|
 | **File** | `src/optimizer/context_optimizer.py` |
-| **Status** | ✅ Implemented (M6.1); failure fallback pending (M8.1) |
+| **Status** | ✅ Implemented |
 | **Model** | `microsoft/llmlingua-2-bert-base-multilingual-cased-meetingbank` (ADR-006, resolved) |
 | **Input** | `query: string, retrieved_context: string` |
 | **Output** | `OptimizedContext { text, original_tokens, compressed_tokens, compression_ratio, latency_ms, status }` |
@@ -309,7 +309,7 @@ Context:
 | Property | Value |
 |---|---|
 | **Files** | `src/evaluation/metrics.py`, `src/evaluation/benchmark.py`, `src/evaluation/latency.py` |
-| **Status** | 🔲 Not yet implemented (M7) |
+| **Status** | ✅ Implemented |
 | **Input** | Predictions + references + execution metadata |
 | **Output** | `EvaluationMetrics` |
 
@@ -364,7 +364,7 @@ MRR and nDCG are deferred — implement only if HotpotQA supporting-document IDs
 
 | Property | Value |
 |---|---|
-| **Status** | Partially implemented (logging infrastructure present; structured result writer in M7) |
+| **Status** | ✅ Implemented |
 | **Must NOT** | Alter pipeline behavior or research logic |
 
 **Per-query metadata captured:**
@@ -433,7 +433,7 @@ These are the points where the pipeline crosses from Python logic into neural-ne
 
 | Boundary | Component | Model (current) |
 |---|---|---|
-| Routing inference | Complexity Router | deberta-v3-small (ADR-002, open) |
+| Routing inference | Complexity Router | distilbert-base-uncased (ADR-002, resolved) |
 | Embedding inference | Embedding Model | BAAI/bge-small-en-v1.5 |
 | Compression inference | Context Compressor | llmlingua-2-bert-base-multilingual-cased-meetingbank |
 | Generation inference | Generator LLM | HuggingFaceTB/SmolLM-135M-Instruct |
@@ -786,7 +786,7 @@ All experiment-sensitive parameters live in `configs/config.yaml`. No magic cons
 ```yaml
 models:
   router:
-    name: "microsoft/deberta-v3-small"   # ADR-002: open; confirm before M9
+    name: "distilbert-base-uncased"      # ADR-002: resolved
     checkpoint: null                      # path to fine-tuned checkpoint
   embeddings:
     name: "BAAI/bge-small-en-v1.5"       # ADR-003: resolved
@@ -796,7 +796,7 @@ models:
     name: "HuggingFaceTB/SmolLM-135M-Instruct"  # ADR-001: resolved
 
 retrieval:
-  k_simple: 2        # ADR-005: open defaults; validate at M9.3
+  k_simple: 2        # ADR-005: resolved
   k_complex: 10
   baseline_k: 5
   chunk_size: 512

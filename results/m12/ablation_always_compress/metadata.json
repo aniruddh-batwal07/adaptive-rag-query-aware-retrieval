@@ -1,0 +1,6 @@
+{
+  "dataset": "datasets/splits/test_mini_10.jsonl",
+  "sample_count": 10,
+  "condition": "WITH compression",
+  "k_value": 10
+}

@@ -134,11 +134,9 @@ class Pipeline:
             retrieval_k = target_k
 
             # 3. Context Assembly
-            # Construct the context string by joining chunk texts deterministically in rank order
-            context = "\n\n".join([chunk["text"] for chunk in retrieved_chunks])
-
             if should_compress and len(retrieved_chunks) > 0:
-                optimized_context = self.compressor.compress(normalized_query, context)
+                chunk_texts = [chunk["text"] for chunk in retrieved_chunks]
+                optimized_context = self.compressor.compress(normalized_query, chunk_texts)
                 context = optimized_context.text
                 original_context_tokens = optimized_context.original_tokens
                 compressed_context_tokens = optimized_context.compressed_tokens
@@ -149,6 +147,8 @@ class Pipeline:
                     compression_applied = False
                 else:
                     compression_applied = True
+            else:
+                context = "\n\n".join([chunk["text"] for chunk in retrieved_chunks])
 
         # 4. Generation
         # Note: The generator's generate method will build the prompt and run inference

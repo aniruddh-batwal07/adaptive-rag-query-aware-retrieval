@@ -48,7 +48,7 @@ def test_always_compress_pipeline_execution(mock_config):
     # 1. K=10 should be requested
     mock_retriever.retrieve.assert_called_once_with("What is X?", top_k=10)
     
-    expected_original_context = "\n\n".join([c["text"] for c in mock_chunks])
+    expected_original_context = [c["text"] for c in mock_chunks]
     
     # 2. Compressor is invoked
     mock_compressor.compress.assert_called_once_with("What is X?", expected_original_context)

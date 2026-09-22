@@ -1,0 +1,12 @@
+{
+  "dataset": "datasets/splits/test_mini_10.jsonl",
+  "sample_count": 10,
+  "model_identifiers": {
+    "generator": "HuggingFaceTB/SmolLM-135M-Instruct",
+    "retriever_embeddings": "BAAI/bge-small-en-v1.5",
+    "compressor": "microsoft/llmlingua-2-bert-base-multilingual-cased-meetingbank",
+    "router": "distilbert-base-uncased"
+  },
+  "retrieval_k": null,
+  "random_seed": 42
+}

@@ -47,8 +47,7 @@ adaptive-rag-query-aware-retrieval/
 └── docs/
 ```
 
-**What works:** Baselines A (LLM Only) and B (Fixed RAG) are functional end-to-end.
-**What does not exist yet:** Evaluation metrics, benchmark runner, complexity router, adaptive controller, Baseline C (Always-Compress), Baseline D (AdaptiveRAG).
+**What works:** All baselines (A: LLM Only, B: Fixed RAG, C: Always-Compress, D: AdaptiveRAG) are functional end-to-end. Evaluation infrastructure, complexity router, and adaptive controller are fully implemented.
 
 ---
 
@@ -97,33 +96,17 @@ adaptive-rag-query-aware-retrieval/
 
 | Milestone | Name | What It Produces |
 |---|---|---|
-| **M7** | Evaluation Infrastructure | All metrics + benchmark runner validated |
-| **M8** | Compression Fallback + Baseline C | Always-Compress pipeline complete + evaluated |
-| **M9** | Complexity Router | Trained router with SIMPLE/COMPLEX classification, independently evaluated |
-| **M10** | Adaptive Controller + Baseline D + CLI Demo | Full AdaptiveRAG pipeline complete + evaluated + mandatory demo trace |
-| **M11** | Primary Benchmark | All 4 baselines compared on identical test conditions |
-| **M12** | Ablation + Error Analysis | Compression ablation + representative failure inspection |
-| **MVP STOP ✋** | Research package | Analysis, reproducibility metadata, report packaging |
+| **M7** | Evaluation Infrastructure | ✅ Complete |
+| **M8** | Compression Fallback + Baseline C | ✅ Complete |
+| **M9** | Complexity Router | ✅ Complete |
+| **M10** | Adaptive Controller + Baseline D + CLI Demo | ✅ Complete |
+| **M11** | Primary Benchmark | ✅ Complete |
+| **M12** | Ablation + Error Analysis | ✅ Complete |
+| **MVP STOP ✋** | Research package | ✅ Complete |
 
-**Target: 6 meaningful remaining milestones + stop condition.**
+**Target: 0 remaining milestones. Project has reached MVP Stop.**
 
-All remaining milestones flow sequentially:
-
-```text
-M7 (Evaluation Infrastructure)
-  ↓
-M8 (Compression Fallback + Baseline C)
-  ↓
-M9 (Complexity Router)
-  ↓
-M10 (Adaptive Controller + Baseline D)
-  ↓
-M11 (Primary Benchmark — all 4 baselines)
-  ↓
-M12 (Ablation + Error Analysis)
-  ↓
-MVP STOP ✋
-```
+The project is currently in the Post-MVP phase (Final release packaging, writing, and presentation).
 
 ---
 
@@ -647,12 +630,12 @@ M12: Ablation + Error Analysis + Reproducibility Metadata
 | Decision | Status | Resolution |
 |---|---|---|
 | **ADR-001** Generator model | ✅ Resolved | `HuggingFaceTB/SmolLM-135M-Instruct` |
-| **ADR-002** Router model | 🔲 Open | Direction: `microsoft/deberta-v3-small`; must confirm at M9.1 |
+| **ADR-002** Router model | ✅ Resolved | `distilbert-base-uncased` |
 | **ADR-003** Embedding model | ✅ Resolved | `BAAI/bge-small-en-v1.5` |
 | **ADR-004** Vector store | ✅ Resolved | ChromaDB |
-| **ADR-005** K values | 🔲 Open (defaults set) | K_simple=2, K_complex=10, K_baseline=5; validate at M9.3 |
+| **ADR-005** K values | ✅ Resolved | K_simple=2, K_complex=10, K_baseline=5 |
 | **ADR-006** Compression budget | ✅ Resolved (initial) | 0.5; validated at M12 ablation |
-| **ADR-007** Router confidence threshold | 🔲 Open | Determine after M9.3 router evaluation |
+| **ADR-007** Router confidence threshold | ✅ Resolved | Determined post-M9.3 evaluation |
 | **ADR-008** External inference fallback | ✅ Not needed | Local SmolLM confirmed feasible on CPU |
 
 ---
