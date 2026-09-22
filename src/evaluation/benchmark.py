@@ -36,6 +36,11 @@ def run_benchmark(pipeline_fn: Callable[[str], Any], examples: List[Dict[str, An
         BenchmarkResult containing aggregated metrics and per-example predictions.
     """
     predictions_out = []
+    results_dir = Path("results") / experiment_name
+    results_dir.mkdir(parents=True, exist_ok=True)
+    predictions_file = results_dir / "predictions.jsonl"
+    with open(predictions_file, "w") as f:
+        pass # Clear file before appending
     
     # Aggregators
     em_scores = []
@@ -55,7 +60,8 @@ def run_benchmark(pipeline_fn: Callable[[str], Any], examples: List[Dict[str, An
     # Retrieval recall aggregators
     recalls = []
 
-    for ex in examples:
+    from tqdm import tqdm
+    for ex in tqdm(examples, desc="Running benchmark"):
         query = ex.get('question', ex.get('query', ''))
         reference_answers = ex.get('answers', [ex.get('answer', '')])
         if isinstance(reference_answers, str):
@@ -64,7 +70,7 @@ def run_benchmark(pipeline_fn: Callable[[str], Any], examples: List[Dict[str, An
         # Ground truth labels if available
         # Proxy labels: popqa -> SIMPLE, hotpotqa -> COMPLEX (for testing router)
         # We can assume 'source' field or infer from dataset
-        true_label = "SIMPLE" if ex.get('source', '') == "popqa" else "COMPLEX"
+        true_label = "SIMPLE" if ex.get('dataset_source', ex.get('source', '')) == "popqa" else "COMPLEX"
         
         # Execute pipeline
         try:
@@ -88,9 +94,6 @@ def run_benchmark(pipeline_fn: Callable[[str], Any], examples: List[Dict[str, An
             if f1 > best_f1:
                 best_f1 = f1
                 
-        em_scores.append(best_em)
-        f1_scores.append(best_f1)
-        
         # Extract metadata
         record = {
             "query_id": ex.get("id", ex.get("_id", "unknown")),
@@ -118,12 +121,6 @@ def run_benchmark(pipeline_fn: Callable[[str], Any], examples: List[Dict[str, An
             record["compression_latency_ms"] = comp_lat
             record["router_latency_ms"] = rout_lat
             
-            if ret_lat is not None: retrieval_latencies.append(ret_lat)
-            if gen_lat is not None: generation_latencies.append(gen_lat)
-            if tot_lat is not None: total_latencies.append(tot_lat)
-            if comp_lat is not None: compression_latencies.append(comp_lat)
-            if rout_lat is not None: router_latencies.append(rout_lat)
-            
             # Tokens & Compression
             record["compression_applied"] = getattr(metadata, "compression_applied", False)
             orig_toks = getattr(metadata, "original_context_tokens", None)
@@ -133,17 +130,11 @@ def run_benchmark(pipeline_fn: Callable[[str], Any], examples: List[Dict[str, An
             record["compressed_context_tokens"] = comp_toks
             record["compression_ratio"] = getattr(metadata, "compression_ratio", None)
             
-            if orig_toks is not None: original_tokens_list.append(orig_toks)
-            if comp_toks is not None: compressed_tokens_list.append(comp_toks)
-            
             # Router
             comp_label = getattr(metadata, "complexity_label", None)
             record["complexity_label"] = comp_label
             record["router_confidence"] = getattr(metadata, "router_confidence", None)
-            
-            if comp_label is not None:
-                router_labels_pred.append(comp_label)
-                router_labels_true.append(true_label)
+            record["true_label"] = true_label
                 
             # Retrieval evaluation
             retrieved_chunks = getattr(metadata, "retrieved_chunks", [])
@@ -159,13 +150,49 @@ def run_benchmark(pipeline_fn: Callable[[str], Any], examples: List[Dict[str, An
                 k = getattr(metadata, "retrieval_k", 5)
                 rec_at_k = recall_at_k(retrieved_ids, ref_ids, k)
                 record["recall_at_k"] = rec_at_k
-                recalls.append(rec_at_k)
             else:
                 record["recall_at_k"] = None
 
         predictions_out.append(record)
         
-    # Aggregate Metrics
+        with open(predictions_file, "a") as f:
+            f.write(json.dumps(record) + "\n")
+
+    # Aggregate Metrics from file
+    em_scores = []
+    f1_scores = []
+    retrieval_latencies = []
+    generation_latencies = []
+    total_latencies = []
+    compression_latencies = []
+    router_latencies = []
+    original_tokens_list = []
+    compressed_tokens_list = []
+    router_labels_true = []
+    router_labels_pred = []
+    recalls = []
+
+    with open(predictions_file, "r") as f:
+        for line in f:
+            p = json.loads(line)
+            if "em" in p: em_scores.append(p["em"])
+            if "f1" in p: f1_scores.append(p["f1"])
+
+            if p.get("retrieval_latency_ms") is not None: retrieval_latencies.append(p["retrieval_latency_ms"])
+            if p.get("generation_latency_ms") is not None: generation_latencies.append(p["generation_latency_ms"])
+            if p.get("total_latency_ms") is not None: total_latencies.append(p["total_latency_ms"])
+            if p.get("compression_latency_ms") is not None: compression_latencies.append(p["compression_latency_ms"])
+            if p.get("router_latency_ms") is not None: router_latencies.append(p["router_latency_ms"])
+
+            if p.get("original_context_tokens") is not None: original_tokens_list.append(p["original_context_tokens"])
+            if p.get("compressed_context_tokens") is not None: compressed_tokens_list.append(p["compressed_context_tokens"])
+
+            if p.get("complexity_label") is not None:
+                router_labels_pred.append(p["complexity_label"])
+                router_labels_true.append(p.get("true_label", "COMPLEX"))
+
+            if p.get("recall_at_k") is not None: recalls.append(p["recall_at_k"])
+
     def safe_mean(l):
         return sum(l) / len(l) if len(l) > 0 else None
         
@@ -199,11 +226,6 @@ def run_benchmark(pipeline_fn: Callable[[str], Any], examples: List[Dict[str, An
     with open(results_dir / "metrics.json", "w") as f:
         json.dump(metrics, f, indent=2)
         
-    # 2. predictions.jsonl
-    with open(results_dir / "predictions.jsonl", "w") as f:
-        for p in predictions_out:
-            f.write(json.dumps(p) + "\n")
-            
     # 3. latency.csv
     with open(results_dir / "latency.csv", "w", newline="") as f:
         writer = csv.writer(f)

@@ -35,10 +35,10 @@ class PipelineResult:
     execution_metadata: ExecutionMetadata
 
 class Pipeline:
-    def __init__(self, config: Config, retriever: Retriever = None, generator: ResponseGenerator = None, baseline: str = "fixed_rag", compressor=None):
+    def __init__(self, config: Config, retriever: Retriever = None, generator: ResponseGenerator = None, baseline: str = "fixed_rag", compressor=None, router=None, controller=None):
         """
         Initializes the pipeline with required components.
-        If retriever or generator are not provided, they are instantiated based on config.
+        If components are not provided, they are instantiated based on config.
         """
         self.config = config
         self.baseline = baseline
@@ -60,14 +60,18 @@ class Pipeline:
         if self.baseline == "always_compress":
             self.baseline_k = config.retrieval.k_complex
         elif self.baseline == "adaptive":
-            from src.router.query_classifier import QueryClassifier
-            from src.router.routing_logic import AdaptiveController
+            if router is not None and controller is not None:
+                self.router = router
+                self.controller = controller
+            else:
+                from src.router.query_classifier import QueryClassifier
+                from src.router.routing_logic import AdaptiveController
 
-            router_path = config.models.router.checkpoint
-            if not router_path:
-                router_path = "models/router"
-            self.router = QueryClassifier(router_path, device=config.runtime.device)
-            self.controller = AdaptiveController(config)
+                router_path = config.models.router.checkpoint
+                if not router_path:
+                    router_path = "models/router"
+                self.router = QueryClassifier(router_path, device=config.runtime.device)
+                self.controller = AdaptiveController(config)
         else:
             self.baseline_k = config.retrieval.baseline_k
 
