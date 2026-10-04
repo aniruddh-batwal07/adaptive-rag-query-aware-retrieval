@@ -1,160 +1,226 @@
 ﻿# AdaptiveRAG
 
-A system-level empirical investigation of query-complexity-aware retrieval and conditional context compression.
+> Query-complexity-aware retrieval and selective context compression for efficient Retrieval-Augmented Generation.
 
-## Overview
+AdaptiveRAG is a system-level empirical investigation into optimizing Retrieval-Augmented Generation (RAG) by dynamically varying retrieval depth and selectively activating context compression based on query complexity.
 
-Retrieval-Augmented Generation (RAG) systems typically apply a fixed retrieval and context formulation policy to every query. This uniform approach can retrieve excessive context for simple factual questions or insufficient evidence for complex multi-hop queries, leading to token bloat and processing inefficiencies.
+**[Project Overview](#project-overview) • [Architecture](#architecture) • [Key Results](#key-results) • [Running the Project](#running-the-project) • [Research Paper](#research-paper)**
 
-AdaptiveRAG investigates an adaptive policy where a lightweight query-complexity classifier determines the execution path:
+---
 
-- **SIMPLE Branch:** Retrieves $K = 2$ chunks and skips compression.
-- **COMPLEX Branch:** Retrieves $K = 10$ chunks and applies chunk-wise context compression via LLMLingua-2.
+## Project Overview
+Conventional RAG pipelines typically apply a fixed retrieval depth to every query. This uniform approach can retrieve excessive context for simple factual questions, inflating latency and cost, or retrieve insufficient evidence for complex multi-hop queries, harming reasoning performance.
 
-*Note:* This project is an empirical system-level evaluation of coupling adaptive retrieval with selective compression under controlled execution. It does not claim individual architectural novelty for DistilBERT, BGE, ChromaDB, or LLMLingua-2.
+AdaptiveRAG investigates whether query complexity can govern the execution path. The proposed policy routes queries into two branches:
+- **SIMPLE Branch:** Retrieves $K = 2$ chunks; bypasses compression.
+- **COMPLEX Branch:** Retrieves $K = 10$ chunks; applies chunk-wise compression via LLMLingua-2.
+
+*Note:* This repository is an empirical, system-level investigation. It does not claim individual architectural novelty for DistilBERT, BGE, ChromaDB, or LLMLingua-2.
+
+---
 
 ## Research Question
+> *Can a lightweight pre-retrieval complexity classifier efficiently optimize the RAG pipeline by adaptively varying retrieval depth and selectively triggering context compression, and under what conditions does this yield a net latency improvement?*
 
-Can a lightweight pre-retrieval complexity classifier efficiently optimize the RAG pipeline by adaptively varying retrieval depth and selectively triggering context compression, and under what conditions does this yield a net latency improvement?
+---
 
 ## Architecture
+```mermaid
+flowchart TD
+    Q[User Query] --> P[Preprocessing]
+    P --> R{DistilBERT Router}
 
-```text
-User Query
-   |
-   v
-Preprocessing
-   |
-   v
-Complexity Router (DistilBERT)
-   |
-   +------> [SIMPLE]  (K=2, No Compression)
-   |
-   +------> [COMPLEX] (K=10, LLMLingua-2 Compression)
-   |
-   v
-BGE Embeddings / ChromaDB Retrieval
-   |
-   v
-Generator (SmolLM-135M-Instruct)
-   |
-   v
-Final Answer + Evaluation Telemetry
+    R -->|SIMPLE| S[SIMPLE Branch\nK=2, No Compression]
+    R -->|COMPLEX| C[COMPLEX Branch\nK=10, LLMLingua-2 Compression]
+
+    S --> V[BGE + ChromaDB Retrieval]
+    C --> V
+
+    V --> G[SmolLM-135M-Instruct Generator]
+    G --> A[Final Answer + Telemetry]
 ```
+*Data Flow:* Incoming queries are cleaned and routed by a fine-tuned DistilBERT classifier. SIMPLE queries execute a shallow, fast retrieval path. COMPLEX queries execute a deep retrieval path followed by conditional token compression. The resulting context is assembled into a prompt and fed to the generator.
 
-## Components / Technology Stack
+---
 
-- **Implementation:** Python
-- **Complexity Router:** Fine-tuned `distilbert-base-uncased` (and `bert-base-uncased` for comparison)
-- **Embeddings:** `BAAI/bge-small-en-v1.5`
-- **Vector Database:** ChromaDB
-- **Context Compressor:** `microsoft/llmlingua-2-bert-base-multilingual-cased-meetingbank` (applied chunk-wise due to 512-token constraints)
-- **Generator:** `HuggingFaceTB/SmolLM-135M-Instruct`
-- **Execution Environment:** CPU-only local execution
+## Technology Stack
+| Component | Implementation |
+| :--- | :--- |
+| **Language** | Python |
+| **Primary Router** | `distilbert-base-uncased` (fine-tuned) |
+| **Alternative Router** | `bert-base-uncased` (fine-tuned, for comparison) |
+| **Embeddings** | `BAAI/bge-small-en-v1.5` |
+| **Vector Database** | ChromaDB |
+| **Context Compressor**| `LLMLingua-2` (`microsoft/llmlingua-2-bert-base-multilingual-cased-meetingbank`) |
+| **Generator** | `HuggingFaceTB/SmolLM-135M-Instruct` |
+| **Execution** | CPU-only local execution |
+
+---
 
 ## Datasets
+The project uses subsets of PopQA (simple proxy) and HotpotQA (complex proxy) to establish complexity labels.
 
-The project uses subsets of PopQA (factual/simple proxy) and HotpotQA (multi-hop/complex proxy) to establish complexity labels:
+| Dataset / Artifact | Purpose | Samples |
+| :--- | :--- | :--- |
+| **Training Set** | Fine-tuning the router | 160 |
+| **Development Set** | Validation during training | 40 |
+| **Router Evaluation Artifact** | Standalone robust evaluation of the classifier | 298 |
+| **End-to-End Benchmark** | Primary system downstream evaluation | 10 (5 PopQA + 5 HotpotQA) |
 
-- **160 training samples** for fine-tuning the router.
-- **40 development samples** for validation during training.
-- **298-sample router evaluation artifact** for robust standalone classifier evaluation.
-- **10-query held-out end-to-end benchmark** (5 PopQA + 5 HotpotQA) strictly reserved for primary system evaluation.
+*Important:* The 298-sample router evaluation artifact is distinct from the 10-query end-to-end benchmark.
 
-## Baselines
+---
 
-The AdaptiveRAG policy is evaluated against three fixed conditions:
-1. **LLM-only:** Generation without any retrieved evidence.
-2. **Fixed RAG:** Static retrieval at $K = 5$ without compression.
-3. **Always-Compress:** Static retrieval at $K = 10$ with forced LLMLingua-2 compression on all queries.
+## Experiments
+
+### Baselines
+The system is evaluated across four controlled strategies:
+
+| Strategy | Retrieval | K | Compression | Router |
+| :--- | :--- | :--- | :--- | :--- |
+| **LLM-only** | None | 0 | None | None |
+| **Fixed RAG** | Standard | 5 | None | None |
+| **Always-Compress** | Standard | 10 | LLMLingua-2 | None |
+| **AdaptiveRAG** | Adaptive | 2/10 | Conditional | DistilBERT |
+
+### Classifier Comparison
+The optimal router was selected by comparing `distilbert-base-uncased` against `bert-base-uncased` on the 298-sample robust evaluation artifact.
+
+### Compression Ablation
+An ablation study evaluates the exact cost and token savings of applying LLMLingua-2 on a static $K=10$ retrieval path against a non-compressed $K=10$ baseline.
+
+---
 
 ## Key Results
 
-### Classifier Comparison (298-sample robust evaluation)
-The system evaluated DistilBERT against BERT to select the optimal router. DistilBERT was selected for the primary benchmark due to its superior complex-query recall and much lower inference overhead.
+### Router Comparison
+| Metric | DistilBERT | BERT |
+| :--- | :--- | :--- |
+| **Accuracy** | 99.33% | 97.32% |
+| **Precision** | 99.35% | 100.00% |
+| **Recall** | 99.35% | 94.84% |
+| **F1** | 99.35% | 97.35% |
+| **Latency** | 12.42 ms | 22.30 ms |
 
-**DistilBERT:**
-- Accuracy: 99.33%
-- Precision: 99.35%
-- Recall: 99.35%
-- F1: 99.35%
-- Inference Latency: 12.42 ms
+*DistilBERT was better suited to this experimental setup based on higher recall, F1, accuracy, and lower routing latency.*
 
-**BERT:**
-- Accuracy: 97.32%
-- Precision: 100.00%
-- Recall: 94.84%
-- F1: 97.35%
-- Inference Latency: 22.30 ms
+### Primary Benchmark
+| Strategy | Latency |
+| :--- | :--- |
+| **LLM-only** | 11.877 s |
+| **Fixed RAG** | 18.472 s |
+| **Always-Compress** | 19.510 s |
+| **AdaptiveRAG** | **16.514 s** |
 
-### Primary Benchmark (10-query held-out evaluation)
-- **LLM-only:** 11.877 s
-- **Fixed RAG:** 18.472 s
-- **Always-Compress:** 19.510 s
-- **AdaptiveRAG:** 16.514 s
+### Compression Ablation
+Observed under strictly CPU-based execution:
+- **Token Reduction:** 51.46%
+- **Compression Overhead:** 13.488 s
+- **Generation Savings:** 21.419 s
+- **Net Total-Latency Reduction:** 8.806 s
 
-### Compression Ablation ($K=10$)
-- **Token Reduction:** 51.46% average reduction in context length
-- **Compression Overhead:** 13.488 s average penalty
-- **Generation Savings:** 21.419 s average savings
-- **Net Latency Reduction:** 8.806 s average improvement under the tested CPU constraints.
+### ⚠️ Answer Quality Caveat
+**Exact Match (EM) = 0.0 across the primary benchmark.**
+SmolLM-135M was selected for CPU feasibility, but its severely limited reasoning capacity proved to be a major answer-quality bottleneck. The system's downstream impact on factual correctness cannot be reliably established without a stronger generator.
 
-*Important:* Answer-quality superiority across the retrieval strategies is **not established**. The primary benchmark recorded Exact Match (EM) = 0.0 across all retrieval-augmented conditions, as the weak SmolLM-135M generator could not reliably synthesize the retrieved text into correct factual answers.
+---
 
 ## Classifier Downstream Effect
-While the 298-sample evaluation demonstrated clear classifier differences (e.g., BERT suffering 8 false-negative COMPLEX queries), evaluating the full pipeline with the BERT router on the small 10-query benchmark yielded identical routing decisions to DistilBERT. This indicates the 10-query set is too small to reliably expose routing edge cases downstream.
+While the 298-sample evaluation exposed meaningful differences between DistilBERT and BERT, both routers made identical routing decisions on the 10-query end-to-end benchmark. Consequently, the downstream retrieval and compression paths were identical. This demonstrates that the 10-query set is too small to expose classifier edge cases.
 
-## Repository Structure
-```
-AdaptiveRAG/
-├── configs/            # YAML configuration for models, paths, and hyperparameters
-├── datasets/           # Data loaders, indexing scripts, and PopQA/HotpotQA splits
-├── docs/               # System architecture and design documentation
-├── paper/              # Final IEEE conference paper (LaTeX source and figures)
-├── results/            # Primary benchmark outputs, comparisons, and ablation artifacts
-├── scripts/            # Executable workflows (training, evaluation, benchmarking)
-├── src/                # Core pipeline logic, evaluation metrics, and model wrappers
-└── tests/              # Pytest suite verifying component behavior
-```
+---
+
+## Results at a Glance
+
+| [Classifier Performance](paper/figures/classifier_performance.png) | [Classifier Latency](paper/figures/classifier_latency.png) |
+| :---: | :---: |
+| | |
+| **[Benchmark Latency](paper/figures/benchmark_latency.png)** | **[Token Reduction](paper/figures/token_reduction.png)** |
+
+---
 
 ## Reproducibility
-The final repository contains the recorded benchmarks, ablation metrics, and classifier comparisons in the `results/` directory, specifically under `results/primary_benchmark/`, `results/m12/`, and `results/router_comparison/`.
+Key evaluation outputs and numerical logs are preserved in this repository:
+- `results/primary_benchmark/`
+- `results/m12/` (Ablation study)
+- `results/router_comparison/`
+- `results/literature_comparison.csv`
 
-To run evaluations or examine pipeline logic, reference the CLI scripts in `scripts/`. Note that full end-to-end execution requires the downloaded local HuggingFace weights and a populated ChromaDB index (not checked into source control).
+*Note:* Full one-command reproducibility requires local generation of HuggingFace weights and a populated ChromaDB vector index, which are intentionally excluded from version control.
+
+---
 
 ## Running the Project
-The primary execution entry points are:
+
+Ensure you have a populated ChromaDB index and the necessary dependencies installed.
+
 ```bash
-# Evaluate the standalone trained router against the evaluation set
+# Evaluate the standalone trained router
 python scripts/evaluate_router.py
 
-# Run the downstream classifier comparison script
+# Compare DistilBERT and BERT classifiers
 python scripts/compare_routers.py
-
-# Run the 10-query pipeline benchmark
-python scripts/run_primary_benchmark.py
 
 # Execute the compression ablation study
 python scripts/run_m12_ablation.py
+
+# Run the primary end-to-end benchmark
+python scripts/run_primary_benchmark.py
 ```
+
+---
+
+## Repository Structure
+```text
+AdaptiveRAG/
+├── configs/            # YAML configurations
+├── datasets/           # Data loaders, indexing logic, PopQA/HotpotQA datasets
+├── docs/               # System architecture and design documentation
+├── paper/              # Final IEEE conference paper (LaTeX source and figures)
+├── results/            # Benchmark outputs, comparisons, and ablation artifacts
+├── scripts/            # Executable workflows (training, evaluation, benchmarking)
+├── src/                # Core pipeline logic and model wrappers
+├── tests/              # Pytest suite
+├── pyproject.toml
+├── requirements.txt
+└── README.md
+```
+
+---
 
 ## Testing
-The `src` components are verified using `pytest`. The current suite confirms the modularity of the pipeline, data loaders, preprocessor logic, and the adaptive routing controller (23 test modules passing).
+The current test suite passes **123 tests** covering the core pipeline, routing, retrieval, evaluation, and research-critical behavior.
 
 ```bash
-pytest tests/
+python -m pytest tests/
 ```
 
+---
+
 ## Limitations
-- **10-Query Benchmark:** Functionally demonstrates the pipeline but is insufficient for statistical significance.
-- **Proxy Complexity Labels:** Training labels based on PopQA/HotpotQA membership may promote shortcut learning rather than genuine semantic complexity awareness.
-- **Generator Bottleneck:** SmolLM-135M's limited reasoning capacity prevents meaningful conclusions regarding factual answer quality.
-- **CPU Execution:** Heavily inflates generation times, producing a favorable compression economy that may not generalize to GPU environments.
-- **Sequence-Length Constraints:** LLMLingua-2's 512-token limit necessitates independent chunk-wise compression, scaling the compression overhead linearly with $K$.
+- **10-query end-to-end benchmark:** Insufficient scale for statistical significance.
+- **Proxy complexity labels:** Training targets derived from dataset membership may teach shortcut heuristics rather than genuine semantic complexity.
+- **Weak SmolLM-135M generator:** Prevents meaningful answer-quality evaluation.
+- **CPU-only latency measurements:** Heavily inflates generation times, presenting a favorable compression economy that may vanish on GPU architectures.
+- **LLMLingua-2 512-token constraint:** Requires chunk-wise compression, causing overhead to scale linearly with $K$.
+- **Limited generalizability:** Findings are restricted to this specific data/hardware intersection.
+
+---
+
+## Research Paper
+The full findings are formalized in an IEEE conference-style paper located at:
+- **Source:** [`paper/main.tex`](paper/main.tex)
+- **Bibliography:** [`paper/references.bib`](paper/references.bib)
+
+*(When compiled, the final PDF will be located at `paper/AdaptiveRAG_IEEE_Paper.pdf`)*
+
+---
 
 ## Research Artifacts
-- **Primary Benchmark:** `results/primary_benchmark/`
-- **Compression Ablation:** `results/m12/`
-- **Router Comparison:** `results/router_comparison/`
-- **Literature Survey:** `results/literature_comparison.csv`
-- **IEEE Paper Source:** `paper/`
+| Category | Location |
+| :--- | :--- |
+| **Primary Benchmark** | [`results/primary_benchmark/`](results/primary_benchmark/) |
+| **Compression Ablation** | [`results/m12/`](results/m12/) |
+| **Router Comparison** | [`results/router_comparison/`](results/router_comparison/) |
+| **Literature Comparison** | [`results/literature_comparison.csv`](results/literature_comparison.csv) |
+| **IEEE Paper Source** | [`paper/`](paper/) |
