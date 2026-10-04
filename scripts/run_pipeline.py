@@ -15,13 +15,14 @@ def main():
     parser.add_argument("--baseline", type=str, choices=["fixed_rag", "llm_only", "always_compress", "adaptive"], default="fixed_rag",
                         help="Select the baseline to run. Use 'fixed_rag' for Baseline B, 'llm_only' for Baseline A, 'always_compress' for Baseline C, or 'adaptive' for Baseline D.")
     parser.add_argument("--fixtures", action="store_true", help="Run the 5 development fixture queries and save results.")
+    parser.add_argument("--config", type=str, default="configs/config.yaml", help="Path to config file.")
     args = parser.parse_args()
 
     if not args.query and not args.fixtures:
         parser.error("Must provide either --query or --fixtures")
 
-    print("Loading config...")
-    config = load_config("configs/config.yaml")
+    print(f"Loading config from {args.config}...")
+    config = load_config(args.config)
 
     print(f"Initializing pipeline with baseline='{args.baseline}'...")
     pipeline = Pipeline(config, baseline=args.baseline)

@@ -1,0 +1,43 @@
+{
+  "routing": {
+    "distilbert_simple_count": 5,
+    "distilbert_complex_count": 5,
+    "bert_simple_count": 5,
+    "bert_complex_count": 5,
+    "mismatches": 0,
+    "bert_false_negatives": 0
+  },
+  "execution": {
+    "distilbert": {
+      "k_sum": 60,
+      "compress_count": 5,
+      "avg_k": 6.0,
+      "compression_rate": 0.5,
+      "avg_ret_lat": 27.60186195373535,
+      "avg_comp_lat": 784.2413902282715,
+      "avg_gen_lat": 15679.445171356201,
+      "avg_tot_lat": 16513.87150287628
+    },
+    "bert": {
+      "k_sum": 60,
+      "compress_count": 5,
+      "avg_k": 6.0,
+      "compression_rate": 0.5,
+      "avg_ret_lat": 2153.7211179733276,
+      "avg_comp_lat": 7315.38097858429,
+      "avg_gen_lat": 35608.60085487366,
+      "avg_tot_lat": 45171.15750312805
+    }
+  },
+  "quality": {
+    "distilbert": {
+      "em": 0.0,
+      "f1": 0.0032
+    },
+    "bert": {
+      "em": 0.0,
+      "f1": 0.003508771929824561
+    }
+  },
+  "disagreements": []
+}

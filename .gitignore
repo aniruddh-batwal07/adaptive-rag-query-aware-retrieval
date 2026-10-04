@@ -1,8 +1,11 @@
-__pycache__/
+﻿__pycache__/
 *.py[cod]
 .pytest_cache/
 .venv/
 .env
 data/index/
 models/
-results/
+datasets/raw/
+predictions.jsonl
+results.jsonl
+errors.jsonl
